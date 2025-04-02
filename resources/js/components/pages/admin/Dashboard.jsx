@@ -4,7 +4,7 @@ import Preloader from '../../ui/Preloader'
 export default function Dashboard() {
   return (
     <div>
-        <Preloader/>
+        <h1>Dashboard</h1>
     </div>
   )
 }

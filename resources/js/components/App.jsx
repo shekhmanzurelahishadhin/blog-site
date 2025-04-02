@@ -6,13 +6,18 @@ import Register from './pages/auth/Register';
 import Dashboard from './pages/admin/Dashboard';
 import AdminLayouts from './layouts/AdminLayouts';
 import PrivateRoute from '../auth/PrivateRoute';
+import GuestRoute from '../auth/GuestRoute';
 
 
 
 export default function App() {
     return (
         <Routes>
-            <Route path='/auth' element={<AuthLayouts />}>
+            <Route path='/auth' element={
+                <GuestRoute>
+                    <AuthLayouts />
+                </GuestRoute>
+            }>
                 <Route path='login' element={<Login />} />
                 <Route path='register' element={<Register />} />
             </Route>
