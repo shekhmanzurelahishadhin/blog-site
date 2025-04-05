@@ -115,7 +115,8 @@
   }
 
   .submenu-link {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 0.5rem 1rem;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
@@ -130,7 +131,66 @@
   .submenu-link.active {
     color: #3b82f6;
   }
+/* Nested submenu styles */
+.submenu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.submenu-toggle:hover {
+  color: white;
+}
+
+.submenu-toggle.active {
+  color: #3b82f6;
+}
+
+.submenu-arrow {
+  transition: transform 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.submenu-arrow.open {
+  transform: rotate(90deg);
+}
+
+.nested-submenu {
+  padding-left: 1rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.nested-submenu.open {
+  max-height: 500px;
+}
+
+.nested-submenu-item {
+  position: relative;
+}
+
+.nested-submenu-link {
+  display: block;
+  padding: 0.5rem 1rem 0.5rem 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.nested-submenu-link:hover, 
+.nested-submenu-link.active {
+  color: white;
+}
+
+.nested-submenu-link.active {
+  color: #3b82f6;
+}
   .sidebar-footer {
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
