@@ -1,7 +1,7 @@
 // resources/js/components/Layouts/AdminLayout.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { FiMenu, FiX, FiChevronDown, FiChevronRight } from 'react-icons/fi';
+import { FiMenu, FiX, FiChevronDown, FiChevronRight, FiArrowRight } from 'react-icons/fi';
 import { 
   FiHome, FiUsers, FiSettings, FiPieChart, 
   FiShoppingBag, FiFileText, FiMail, FiLock, FiLogOut
@@ -179,7 +179,8 @@ export default function AdminLayout() {
               className="sidebar-toggle"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
-              <FiMenu />
+              
+              {sidebarOpen ? <FiMenu size={20} /> : <FiArrowRight size={20} />}
             </button>
             <div className="user-menu">
               <button className="relative">
