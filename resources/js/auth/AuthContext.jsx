@@ -70,14 +70,20 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(error.response.data); // validation errors
+                setErrors(error.response.data.errors || {});
+            } else if (error.response?.status === 401) {
+                // Laravel may return 401 with a generic message
+                setErrors({ email: [error.response.data.message] });
             } else {
-                toast.error(error.response?.data?.error || 'Login failed!');
+                toast.error(error.response?.data?.message || 'Login failed!');
             }
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
-    };const logout = async () => {
+    };
+
+    const logout = async () => {
         try {
             await api.post('/logout');
         } catch (error) {
@@ -91,8 +97,8 @@ export const AuthProvider = ({ children }) => {
         }
     };
     return (
-        <AuthContext.Provider  value={{ user, setUser, register, logout, login, authLoading }}>
-            {authLoading ? <Preloader/> : children}
+        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading }}>
+            {authLoading ? <Preloader /> : children}
         </AuthContext.Provider>
     )
 };
