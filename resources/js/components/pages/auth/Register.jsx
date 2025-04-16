@@ -62,7 +62,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.name && <p className="text-xs text-rose-400">{errors.name}</p>}
+                {errors.name && <p className="text-xs text-rose-400">{errors.name[0]}</p>}
             </div>
             
             <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.email && <p className="text-xs text-rose-400">{errors.email}</p>}
+                {errors.email && <p className="text-xs text-rose-400">{errors.email[0]}</p>}
             </div>
             
             <div className="space-y-2">
@@ -108,7 +108,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.password && <p className="text-xs text-rose-400">{errors.password}</p>}
+                {errors.password && <p className="text-xs text-rose-400">{errors.password[0]}</p>}
                 <p className="text-xs text-white/50 mt-1">Minimum 8 characters with at least one number</p>
             </div>
             
@@ -132,7 +132,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.password_confirmation && <p className="text-xs text-rose-400">{errors.password_confirmation}</p>}
+                {errors.password_confirmation && <p className="text-xs text-rose-400">{errors.password_confirmation[0]}</p>}
             </div>
             
             <div className="flex items-start">

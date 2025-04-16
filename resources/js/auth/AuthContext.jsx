@@ -27,33 +27,35 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const register = async (form, setForm, setErrors, setLoading) => {
-        setLoading(true);
-        try {
-            const response = await api.post('/register', form);
+   const register = async (form, setForm, setErrors, setLoading) => {
+    setLoading(true);
+    try {
+        const response = await api.post('/register', form);
 
-            if (response.data.token) {
-                setUser(response.data.user);
-                localStorage.setItem('auth_token', response.data.token);
-                setForm({
-                    name: '',
-                    email: '',
-                    password: '',
-                    password_confirmation: '',
-                });
-                toast.success('Registration successful!');
-                navigate('/admin/dashboard');
-            }
-        } catch (error) {
-            if (error.response?.status === 422) {
-                setErrors(error.response.data); // validation errors
-            } else {
-                toast.error(error.response?.data?.error || 'Registration failed!');
-            }
-        } finally {
-            setLoading(false);
+        if (response.data.token) {
+            setUser(response.data.user);
+            localStorage.setItem('auth_token', response.data.token);
+            setForm({
+                name: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+            });
+            setErrors({}); // Clear any old errors
+            toast.success('Registration successful!');
+            navigate('/admin/dashboard');
         }
-    };
+    } catch (error) {
+        if (error.response?.status === 422) {
+            setErrors(error.response.data.errors || {}); // ✅ Extract only the 'errors' part
+        } else {
+            toast.error(error.response?.data?.message || 'Registration failed!');
+        }
+    } finally {
+        setLoading(false);
+    }
+};
+
 
 
     const login = async (form, setForm, setErrors, setLoading) => {
