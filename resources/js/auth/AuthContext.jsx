@@ -27,33 +27,35 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const register = async (form, setForm, setErrors, setLoading) => {
-        setLoading(true);
-        try {
-            const response = await api.post('/register', form);
+   const register = async (form, setForm, setErrors, setLoading) => {
+    setLoading(true);
+    try {
+        const response = await api.post('/register', form);
 
-            if (response.data.token) {
-                setUser(response.data.user);
-                localStorage.setItem('auth_token', response.data.token);
-                setForm({
-                    name: '',
-                    email: '',
-                    password: '',
-                    password_confirmation: '',
-                });
-                toast.success('Registration successful!');
-                navigate('/admin/dashboard');
-            }
-        } catch (error) {
-            if (error.response?.status === 422) {
-                setErrors(error.response.data); // validation errors
-            } else {
-                toast.error(error.response?.data?.error || 'Registration failed!');
-            }
-        } finally {
-            setLoading(false);
+        if (response.data.token) {
+            setUser(response.data.user);
+            localStorage.setItem('auth_token', response.data.token);
+            setForm({
+                name: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+            });
+            setErrors({}); // Clear any old errors
+            toast.success('Registration successful!');
+            navigate('/admin/dashboard');
         }
-    };
+    } catch (error) {
+        if (error.response?.status === 422) {
+            setErrors(error.response.data.errors || {}); // ✅ Extract only the 'errors' part
+        } else {
+            toast.error(error.response?.data?.message || 'Registration failed!');
+        }
+    } finally {
+        setLoading(false);
+    }
+};
+
 
 
     const login = async (form, setForm, setErrors, setLoading) => {
@@ -70,14 +72,20 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             if (error.response?.status === 422) {
-                setErrors(error.response.data); // validation errors
+                setErrors(error.response.data.errors || {});
+            } else if (error.response?.status === 401) {
+                // Laravel may return 401 with a generic message
+                setErrors({ email: [error.response.data.message] });
             } else {
-                toast.error(error.response?.data?.error || 'Login failed!');
+                toast.error(error.response?.data?.message || 'Login failed!');
             }
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
-    };const logout = async () => {
+    };
+
+    const logout = async () => {
         try {
             await api.post('/logout');
         } catch (error) {
@@ -91,8 +99,8 @@ export const AuthProvider = ({ children }) => {
         }
     };
     return (
-        <AuthContext.Provider  value={{ user, setUser, register, logout, login, authLoading }}>
-            {authLoading ? <Preloader/> : children}
+        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading }}>
+            {authLoading ? <Preloader /> : children}
         </AuthContext.Provider>
     )
 };

@@ -1,13 +1,15 @@
 // resources/js/components/pages/Register.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import useAuth from '../../../auth/useAuth';
 
 export default function Register() {
+    const{ register } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        password_confirmation: ''
     });
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState({});
@@ -20,7 +22,7 @@ export default function Register() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
         
@@ -29,21 +31,13 @@ export default function Register() {
         if (!formData.name) newErrors.name = 'Name is required';
         if (!formData.email) newErrors.email = 'Email is required';
         if (!formData.password) newErrors.password = 'Password is required';
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
+        if (formData.password !== formData.password_confirmation) {
+            newErrors.password_confirmation = 'Passwords do not match';
         }
         
         setErrors(newErrors);
         
-        if (Object.keys(newErrors).length === 0) {
-            // Simulate API call
-            setTimeout(() => {
-                setIsLoading(false);
-                // Handle successful registration
-            }, 1500);
-        } else {
-            setIsLoading(false);
-        }
+        await register(formData, setFormData, setErrors, setIsLoading);
     };
 
     return (
@@ -68,7 +62,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.name && <p className="text-xs text-rose-400">{errors.name}</p>}
+                {errors.name && <p className="text-xs text-rose-400">{errors.name[0]}</p>}
             </div>
             
             <div className="space-y-2">
@@ -91,7 +85,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.email && <p className="text-xs text-rose-400">{errors.email}</p>}
+                {errors.email && <p className="text-xs text-rose-400">{errors.email[0]}</p>}
             </div>
             
             <div className="space-y-2">
@@ -114,7 +108,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.password && <p className="text-xs text-rose-400">{errors.password}</p>}
+                {errors.password && <p className="text-xs text-rose-400">{errors.password[0]}</p>}
                 <p className="text-xs text-white/50 mt-1">Minimum 8 characters with at least one number</p>
             </div>
             
@@ -123,11 +117,11 @@ export default function Register() {
                 <div className="relative">
                     <input
                         type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
+                        name="password_confirmation"
+                        value={formData.password_confirmation}
                         onChange={handleChange}
                         className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${
-                            errors.confirmPassword ? 'border-rose-500/50' : 'border-white/10'
+                            errors.password_confirmation ? 'border-rose-500/50' : 'border-white/10'
                         } text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-transparent transition-all`}
                         placeholder="••••••••"
                         required
@@ -138,7 +132,7 @@ export default function Register() {
                         </svg>
                     </div>
                 </div>
-                {errors.confirmPassword && <p className="text-xs text-rose-400">{errors.confirmPassword}</p>}
+                {errors.password_confirmation && <p className="text-xs text-rose-400">{errors.password_confirmation[0]}</p>}
             </div>
             
             <div className="flex items-start">
