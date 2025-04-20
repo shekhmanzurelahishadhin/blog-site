@@ -191,6 +191,9 @@
 .nested-submenu-link.active {
   color: #3b82f6;
 }
+.submenu-text{
+    font-size: 0.9rem;
+}
   .sidebar-footer {
     padding: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
