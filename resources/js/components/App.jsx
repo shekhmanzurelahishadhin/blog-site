@@ -7,6 +7,7 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminLayouts from './layouts/AdminLayouts';
 import PrivateRoute from '../auth/PrivateRoute';
 import GuestRoute from '../auth/GuestRoute';
+import CategoryList from "./pages/categories/CategoryList";
 
 
 
@@ -28,6 +29,7 @@ export default function App() {
                 </PrivateRoute>
             }>
                 <Route path='dashboard' element={<Dashboard />} />
+                <Route path='categories' element={<CategoryList />} />
             </Route>
 
         </Routes>

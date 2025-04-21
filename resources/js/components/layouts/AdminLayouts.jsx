@@ -1,10 +1,10 @@
 // resources/js/components/Layouts/AdminLayout.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { 
+import {
   FiMenu, FiX, FiChevronDown, FiChevronRight, FiArrowRight,
-  FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingBag, 
-  FiFileText, FiMail, FiLock, FiLogOut, FiUser, FiKey, FiHelpCircle
+  FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingBag,
+  FiFileText, FiMail, FiLock, FiLogOut, FiUser, FiKey, FiHelpCircle, FiPackage
 } from 'react-icons/fi';
 import '../styles/custome.css';
 import useAuth from '../../auth/useAuth';
@@ -77,6 +77,11 @@ export default function AdminLayout() {
       path: '/admin/dashboard'
     },
     {
+      name: 'Categories',
+      icon: <FiPackage className="text-lg" />,
+      path: '/admin/categories'
+    },
+    {
       name: 'Users',
       icon: <FiUsers className="text-lg" />,
       path: '/admin/users'
@@ -87,23 +92,23 @@ export default function AdminLayout() {
       submenus: [
         { name: 'All Products', path: '/admin/products' },
         { name: 'Categories', path: '/admin/products/categories' },
-          {
-              name: 'Inventory',
-              submenus: [
-                  {
-                      name: 'Stock Levels',
-                      path: '/admin/products/inventory/stock'
-                  },
-                  {
-                      name: 'Warehouses',
-                      path: '/admin/products/inventory/warehouses'
-                  },
-                  {
-                      name: 'Transfers',
-                      path: '/admin/products/inventory/transfers'
-                  }
-              ]
-          }
+        {
+          name: 'Inventory',
+          submenus: [
+            {
+              name: 'Stock Levels',
+              path: '/admin/products/inventory/stock'
+            },
+            {
+              name: 'Warehouses',
+              path: '/admin/products/inventory/warehouses'
+            },
+            {
+              name: 'Transfers',
+              path: '/admin/products/inventory/transfers'
+            }
+          ]
+        }
       ]
     },
     {
@@ -168,61 +173,61 @@ export default function AdminLayout() {
           <ul className="sidebar-menu">
             {menuItems.map((item) => (
               <li key={item.name} className="menu-item">
-                {item.submenus ?  (
-        <>
-          <div
-            className={`menu-toggle ${isParentActive(item) ? 'active' : ''}`}
-            onClick={() => toggleSubmenu(item.name)}
-          >
-            <span className="menu-icon">{item.icon}</span>
-            <span className="menu-text">{item.name}</span>
-            <span className={`menu-arrow ${openSubmenus[item.name] ? 'open' : ''}`}>
-              <FiChevronRight />
-            </span>
-          </div>
-          <ul className={`submenu ${openSubmenus[item.name] ? 'open' : ''}`}>
-            {item.submenus.map((submenu) => (
-              <li key={submenu.name} className="submenu-item">
-                {submenu.submenus ? (
+                {item.submenus ? (
                   <>
                     <div
-                      className={`submenu-toggle ${isParentActive(submenu) ? 'active' : ''}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleSubmenu(`${item.name}-${submenu.name}`);
-                      }}
+                      className={`menu-toggle ${isParentActive(item) ? 'active' : ''}`}
+                      onClick={() => toggleSubmenu(item.name)}
                     >
-                      <span className="submenu-text">{submenu.name}</span>
-                      <span className={`submenu-arrow ${openSubmenus[`${item.name}-${submenu.name}`] ? 'open' : ''}`}>
-                        <FiChevronRight size={14} />
+                      <span className="menu-icon">{item.icon}</span>
+                      <span className="menu-text">{item.name}</span>
+                      <span className={`menu-arrow ${openSubmenus[item.name] ? 'open' : ''}`}>
+                        <FiChevronRight />
                       </span>
                     </div>
-                    <ul className={`nested-submenu ${openSubmenus[`${item.name}-${submenu.name}`] ? 'open' : ''}`}>
-                      {submenu.submenus.map((nestedSubmenu) => (
-                        <li key={nestedSubmenu.name} className="nested-submenu-item">
-                          <Link
-                            to={nestedSubmenu.path}
-                            className={`nested-submenu-link ${isActive(nestedSubmenu.path) ? 'active' : ''}`}
-                          >
-                            {nestedSubmenu.name}
-                          </Link>
+                    <ul className={`submenu ${openSubmenus[item.name] ? 'open' : ''}`}>
+                      {item.submenus.map((submenu) => (
+                        <li key={submenu.name} className="submenu-item">
+                          {submenu.submenus ? (
+                            <>
+                              <div
+                                className={`submenu-toggle ${isParentActive(submenu) ? 'active' : ''}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleSubmenu(`${item.name}-${submenu.name}`);
+                                }}
+                              >
+                                <span className="submenu-text">{submenu.name}</span>
+                                <span className={`submenu-arrow ${openSubmenus[`${item.name}-${submenu.name}`] ? 'open' : ''}`}>
+                                  <FiChevronRight size={14} />
+                                </span>
+                              </div>
+                              <ul className={`nested-submenu ${openSubmenus[`${item.name}-${submenu.name}`] ? 'open' : ''}`}>
+                                {submenu.submenus.map((nestedSubmenu) => (
+                                  <li key={nestedSubmenu.name} className="nested-submenu-item">
+                                    <Link
+                                      to={nestedSubmenu.path}
+                                      className={`nested-submenu-link ${isActive(nestedSubmenu.path) ? 'active' : ''}`}
+                                    >
+                                      {nestedSubmenu.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          ) : (
+                            <Link
+                              to={submenu.path}
+                              className={`submenu-link ${isActive(submenu.path) ? 'active' : ''}`}
+                            >
+                              {submenu.name}
+                            </Link>
+                          )}
                         </li>
                       ))}
                     </ul>
                   </>
                 ) : (
-                  <Link
-                    to={submenu.path}
-                    className={`submenu-link ${isActive(submenu.path) ? 'active' : ''}`}
-                  >
-                    {submenu.name}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : (
                   <Link
                     to={item.path}
                     className={`menu-link ${isActive(item.path) ? 'active' : ''}`}
@@ -257,13 +262,13 @@ export default function AdminLayout() {
           >
             {sidebarOpen ? <FiMenu size={20} /> : <FiArrowRight size={20} />}
           </button>
-          
+
           <div className="user-menu" ref={dropdownRef}>
             <button className="relative">
               <FiMail size={20} />
               <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-            
+
             <div className="relative">
               {/* User Dropdown Trigger */}
               <div
@@ -288,7 +293,7 @@ export default function AdminLayout() {
                     <p className="text-sm font-medium text-gray-900">{user?.name || 'Admin User'}</p>
                     <p className="text-xs text-gray-500 truncate">{user?.email || 'admin@example.com'}</p>
                   </div>
-                  
+
                   <Link
                     to="/admin/profile"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -296,7 +301,7 @@ export default function AdminLayout() {
                     <FiUser className="mr-3 text-gray-400" />
                     Your Profile
                   </Link>
-                  
+
                   <Link
                     to="/admin/settings"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -304,7 +309,7 @@ export default function AdminLayout() {
                     <FiSettings className="mr-3 text-gray-400" />
                     Settings
                   </Link>
-                  
+
                   <Link
                     to="/admin/password"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -341,7 +346,7 @@ export default function AdminLayout() {
         {/* Page Content */}
         <main className="p-6">
           {/* <div className="max-w-7xl mx-auto"> */}
-            <Outlet />
+          <Outlet />
           {/* </div> */}
         </main>
       </div>
