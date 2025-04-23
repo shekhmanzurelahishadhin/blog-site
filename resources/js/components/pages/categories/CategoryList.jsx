@@ -3,6 +3,9 @@ import { FiPlus, FiEdit2, FiTrash2, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from "../../../api/axios";
+import Swal from 'sweetalert2';
+import DataTable from 'react-data-table-component';
+
 
 export default function CategoryList() {
     const [categories, setCategories] = useState([]);
@@ -78,22 +81,31 @@ export default function CategoryList() {
         }
 
         try {
+            let updatedCategory;
+
             if (currentCategory) {
                 // Update existing category
-                await axios.put(`/api/categories/${currentCategory.id}`, formData);
+                const res = await api.put(`/categories/${currentCategory.id}`, formData);
+                updatedCategory = res.data.data;
                 toast.success('Category updated successfully');
+
+                // Replace only the updated row in state
+                setCategories(prev =>
+                    prev.map(cat => cat.id === updatedCategory.id ? updatedCategory : cat)
+                );
             } else {
                 // Create new category
-                await axios.post('/api/categories', formData);
+                const res = await api.post('/categories', formData);
+                updatedCategory = res.data.data; // assuming backend returns the new category
                 toast.success('Category created successfully');
+
+                // Add new category to the state
+                setCategories(prev => [updatedCategory, ...prev]);
             }
 
-            // Refresh categories and close modal
-            fetchCategories();
             handleCloseModal();
         } catch (error) {
             if (error.response?.status === 422) {
-                // Laravel validation errors
                 setErrors(error.response.data.errors);
             } else {
                 toast.error(error.response?.data?.message || 'Something went wrong');
@@ -101,15 +113,27 @@ export default function CategoryList() {
         } finally {
             setIsLoading(false);
         }
+
     };
 
     // Handle delete category
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to delete this category?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
             try {
-                await axios.delete(`/api/categories/${id}`);
+                await api.delete(`/categories/${id}`);
                 toast.success('Category deleted successfully');
-                fetchCategories();
+                // Optimistically update state:
+                setCategories(prev => prev.filter(cat => cat.id !== id));
             } catch (error) {
                 toast.error(error.response?.data?.message || 'Failed to delete category');
             }
@@ -147,6 +171,39 @@ export default function CategoryList() {
         });
         setErrors({});
     };
+    const columns = [
+        {
+            name: 'Name',
+            selector: row => row.name,
+            sortable: true,
+        },
+        {
+            name: 'Slug',
+            selector: row => row.slug,
+            sortable: true,
+        },
+        {
+            name: 'Actions',
+            cell: row => (
+                <div className="flex space-x-2">
+                    <button
+                        onClick={() => handleEdit(row)}
+                        className="text-indigo-600 hover:text-indigo-900"
+                        title="Edit"
+                    >
+                        <FiEdit2 />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(row.id)}
+                        className="text-red-600 hover:text-red-900"
+                        title="Delete"
+                    >
+                        <FiTrash2 />
+                    </button>
+                </div>
+            ),
+        },
+    ];
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -165,49 +222,31 @@ export default function CategoryList() {
 
                 {/* Categories Table */}
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {categories.length > 0 ? (
-                                categories.map((category) => (
-                                    <tr key={category.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.slug}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div className="flex space-x-2">
-                                                <button
-                                                    onClick={() => handleEdit(category)}
-                                                    className="text-indigo-600 hover:text-indigo-900"
-                                                    title="Edit"
-                                                >
-                                                    <FiEdit2 />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(category.id)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                    title="Delete"
-                                                >
-                                                    <FiTrash2 />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-500">
-                                        No categories found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                    <DataTable
+                        columns={columns}
+                        data={categories}
+                        pagination
+                        highlightOnHover
+                        pointerOnHover
+                        progressPending={isLoading}
+                        subHeader
+                        subHeaderComponent={
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="px-4 py-2 border rounded-md"
+                                onChange={(e) => {
+                                    const value = e.target.value.toLowerCase();
+                                    const filtered = categories.filter(cat =>
+                                        cat.name.toLowerCase().includes(value) ||
+                                        cat.slug.toLowerCase().includes(value)
+                                    );
+                                    setCategoriesSearch(filtered);
+                                }}
+                            />
+                        }
+                    />
+
                 </div>
             </div>
 
@@ -236,13 +275,11 @@ export default function CategoryList() {
                                     onChange={(e) => {
                                         handleInputChange(e);
                                         // Auto-generate slug when name changes (only for new categories)
-                                        if (!currentCategory) {
-                                            setFormData({
-                                                ...formData,
-                                                name: e.target.value,
-                                                slug: generateSlug(e.target.value)
-                                            });
-                                        }
+                                        setFormData({
+                                            ...formData,
+                                            name: e.target.value,
+                                            slug: generateSlug(e.target.value)
+                                        });
                                     }}
                                     className={`w-full px-3 py-2 border rounded-md ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                                 />
