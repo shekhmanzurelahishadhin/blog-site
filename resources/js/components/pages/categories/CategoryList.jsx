@@ -222,8 +222,6 @@ export default function CategoryList() {
             ),
             width: '120px',
             ignoreRowClick: true,
-            allowOverflow: true,
-            button: true,
         }
     ];
 
