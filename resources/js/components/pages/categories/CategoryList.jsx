@@ -193,7 +193,7 @@ export default function CategoryList() {
         {
             name: '#', // Serial Number Column
             cell: (row, index, column, id) => index + 1, // Serial starts at 1
-            width: '60px', // Optional: Adjust width
+            width: '5%', // Optional: Adjust width
             grow: 0, // Optional: Prevent column from growing
         },
         {
@@ -220,17 +220,17 @@ export default function CategoryList() {
                     </button>
                 </div>
             ),
-            width: '120px',
+            width: '15%',
             ignoreRowClick: true,
         }
     ];
 
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto py-8">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 {/* Header with Add button */}
-                <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gray-50 border-b">
+                <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">Categories</h2>
                     <button
                         onClick={handleCreate}
