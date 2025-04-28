@@ -74,7 +74,7 @@ export default function AdminLayout() {
     {
       name: 'Dashboard',
       icon: <FiHome className="text-lg" />,
-      path: '/admin/dashboard'
+      path: '/admin'
     },
     {
       name: 'Categories',

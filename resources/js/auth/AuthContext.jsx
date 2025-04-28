@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
             });
             setErrors({}); // Clear any old errors
             toast.success('Registration successful!');
-            navigate('/admin/dashboard');
+            navigate('/admin');
         }
     } catch (error) {
         if (error.response?.status === 422) {
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
                 localStorage.setItem('auth_token', response.data.token);
                 setForm({ email: '', password: '', message: '' });
                 toast.success('Login successful!');
-                navigate('/admin/dashboard');
+                navigate('/admin');
             }
         } catch (error) {
             if (error.response?.status === 422) {

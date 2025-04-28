@@ -9,7 +9,7 @@ const GuestRoute = ({ children }) => {
     if (authLoading) {
         return <Preloader/>;
     }
-    return !user ? children : <Navigate to="/admin/dashboard" replace />;
+    return !user ? children : <Navigate to="/admin" replace />;
 };
 
 export default GuestRoute;

@@ -28,7 +28,7 @@ export default function App() {
                     <AdminLayouts />
                 </PrivateRoute>
             }>
-                <Route path='dashboard' element={<Dashboard />} />
+                <Route index element={<Dashboard />} />
                 <Route path='categories' element={<CategoryList />} />
             </Route>
 
