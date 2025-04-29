@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('meta');
             $table->longText('description');
-            $table->string('image')->nullable();
+            $table->text('image')->nullable();
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->boolean('active')->default(false);
             $table->datetime('published_at')->nullable();

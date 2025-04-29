@@ -8,6 +8,7 @@ import AdminLayouts from './layouts/AdminLayouts';
 import PrivateRoute from '../auth/PrivateRoute';
 import GuestRoute from '../auth/GuestRoute';
 import CategoryList from "./pages/categories/CategoryList";
+import PostList from './pages/posts/PostList';
 
 
 
@@ -30,6 +31,7 @@ export default function App() {
             }>
                 <Route index element={<Dashboard />} />
                 <Route path='categories' element={<CategoryList />} />
+                <Route path='posts' element={<PostList />} />
             </Route>
 
         </Routes>

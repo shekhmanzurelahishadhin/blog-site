@@ -82,6 +82,11 @@ export default function AdminLayout() {
       path: '/admin/categories'
     },
     {
+      name: 'Posts',
+      icon: <FiFileText className="text-lg" />,
+      path: '/admin/posts'
+    },
+    {
       name: 'Users',
       icon: <FiUsers className="text-lg" />,
       path: '/admin/users'

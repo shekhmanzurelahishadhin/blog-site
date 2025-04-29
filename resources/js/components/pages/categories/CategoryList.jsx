@@ -6,9 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import api from "../../../api/axios";
 import Swal from 'sweetalert2';
 import DataTable from 'react-data-table-component';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import ExportButtons from '../../ui/ExportButtons';
 
 
