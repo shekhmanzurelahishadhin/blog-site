@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone';
 function ImageDropzone({
   onImageChange,     // callback to parent when file is selected
   initialImage = null, // optional initial preview (edit form)
-  width = "w-64",      // Tailwind class for width
+  width = "w-100",      // Tailwind class for width
   height = "h-64",     // Tailwind class for height
   rounded = "rounded-lg" // Tailwind class for border radius
 }) {

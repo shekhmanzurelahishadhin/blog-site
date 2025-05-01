@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FiPlus, FiEdit2, FiTrash2, FiX, FiDownload } from 'react-icons/fi';
-import { FaFileExcel, FaFileCsv, FaFilePdf } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from "../../../api/axios";
