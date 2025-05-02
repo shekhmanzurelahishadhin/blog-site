@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('meta');
             $table->longText('description');
             $table->text('image')->nullable();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+//            $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->boolean('active')->default(false);
             $table->datetime('published_at')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'user_id');
