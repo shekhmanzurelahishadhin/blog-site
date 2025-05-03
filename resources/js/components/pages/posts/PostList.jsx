@@ -11,6 +11,7 @@ import moment from 'moment';
 import ImageDropzone from '../../ui/ImageDropzone';
 import RichTextEditor from '../../ui/RichTextEditor';
 import Select from 'react-select';
+import { NavLink } from 'react-router-dom';
 
 
 export default function PostList() {
@@ -259,15 +260,21 @@ export default function PostList() {
   const handleEdit = (post) => {
     setCurrentPost(post);
     setFormData({
-      title: post.title,
-      slug: post.slug,
-      meta: post.meta,
-      description: post.description,
-      category_ids: post.category_ids,
-      image: null,
-      active: post.active,
+      title: post.title || '',
+      slug: post.slug || '',
+      meta: post.meta || '',
+      description: post.description || '',
+      category_ids: Array.isArray(post.categories) ? post.categories.map(cat => cat.id) : [],
+      image: post.image, // Reset on edit
+      active: post.active, //  0/1 
       published_at: post.published_at ? moment(post.published_at).format('YYYY-MM-DD') : ''
     });
+    setSelectedCategories(
+      post.categories?.map(cat => ({
+        value: cat.id,
+        label: cat.name
+      })) || []
+    );
     setIsModalOpen(true);
   };
 
@@ -318,13 +325,16 @@ export default function PostList() {
       name: 'Title',
       selector: row => row.title,
       sortable: true,
-      width: '25%',
+      width: '30%',
     },
     {
       name: 'Category',
-      selector: row => row.category?.name || 'N/A',
+      selector: row =>
+        Array.isArray(row.categories) && row.categories.length > 0
+          ? row.categories.map(cat => cat.name).join(', ')
+          : 'N/A',
       sortable: true,
-      width: '15%',
+      width: '25%',
     },
     {
       name: 'Status',
@@ -345,9 +355,12 @@ export default function PostList() {
       name: 'Actions',
       cell: row => (
         <div className="flex space-x-2">
-          <button onClick={() => window.open(`/posts/${row.slug}`, '_blank')} className="text-blue-600 hover:text-blue-900">
+          <NavLink
+            to={`/admin/posts/${row.slug}`}
+            className="text-blue-600 hover:text-blue-900"
+          >
             <FiEye />
-          </button>
+          </NavLink>
           <button onClick={() => handleEdit(row)} className="text-indigo-600 hover:text-indigo-900">
             <FiEdit2 />
           </button>
@@ -524,8 +537,8 @@ export default function PostList() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Featured Image
                 </label>
-                <ImageDropzone onImageChange={handleImageChange} />
-                {/* 
+                <ImageDropzone initialImage={formData.image} onImageChange={handleImageChange} />
+                {/*
                 {uploadedFile && (
                   <p className="mt-4 text-green-600">File ready to upload: {uploadedFile.name}</p>
                 )} */}
@@ -535,7 +548,7 @@ export default function PostList() {
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                   Description <span className="text-red-500">*</span>
                 </label>
-                <RichTextEditor onChange={handleDescriptionChange} className="min-h-[300px] p-4 bg-white focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none" />
+                <RichTextEditor content={formData.description} onChange={handleDescriptionChange} className="min-h-[300px] p-4 bg-white focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none" />
                 {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
               </div>
 

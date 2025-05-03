@@ -102,4 +102,14 @@ class PostController extends Controller
             'message' => 'Post deleted successfully.'
         ], 200);
     }
+    public function showBySlug($slug)
+    {
+        $post = Post::where('slug', $slug)->with('categories', 'user')->firstOrFail();
+
+        return response()->json([
+            'message' => 'Post details fetched.',
+            'data' => $post
+        ]);
+    }
+
 }

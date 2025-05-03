@@ -13,7 +13,7 @@ function ImageDropzone({
   // Set initial image (useful for edit mode)
   useEffect(() => {
     if (initialImage) {
-      setImage({ preview: initialImage });
+      setImage({  preview: `${import.meta.env.VITE_BACKEND_URL}/storage/${initialImage}` });
     }
   }, [initialImage]);
 
