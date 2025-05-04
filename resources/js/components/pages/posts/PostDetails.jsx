@@ -1,7 +1,8 @@
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Preloader from '../../ui/Preloader';
 import api from '../../../api/axios';
+import { FiArrowLeft } from 'react-icons/fi';
 
 const PostDetails = () => {
     const { slug } = useParams();
@@ -29,6 +30,13 @@ const PostDetails = () => {
                 {/* Header with Add button */}
                 <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">Post Details</h2>
+                       <NavLink to={'/admin/posts'}
+                                
+                                className="mt-2 sm:mt-0 flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors no-underline"
+                              >
+                                <FiArrowLeft className="mr-2" />
+                                Back
+                              </NavLink>
                 </div>
                 <div className="px-4">
                     
