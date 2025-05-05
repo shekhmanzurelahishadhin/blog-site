@@ -55,7 +55,7 @@ const AllPostsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 6;
+  const postsPerPage = 2;
 
   // Get unique categories
   const categories = ['All', ...new Set(allPosts.map(post => post.category))];
