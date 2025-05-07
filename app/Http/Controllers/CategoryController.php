@@ -18,7 +18,9 @@ class CategoryController extends Controller
     public function store(Request $request) {
         $data = $request->validate([
             'name' => 'required',
-            'slug' => 'required|unique:categories'
+            'slug' => 'required|unique:categories',
+            'color' => 'required',
+            'icon' => 'required',
         ]);
 
         $category = Category::create($data);
@@ -39,7 +41,9 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category) {
         $data = $request->validate([
             'name' => 'required',
-            'slug' => 'required|unique:categories,slug,' . $category->id
+            'slug' => 'required|unique:categories,slug,' . $category->id,
+             'color' => 'required',
+            'icon' => 'required',
         ]);
 
         $category->update($data);

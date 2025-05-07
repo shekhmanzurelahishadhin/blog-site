@@ -6,6 +6,9 @@ import api from "../../../api/axios";
 import Swal from 'sweetalert2';
 import DataTable from 'react-data-table-component';
 import ExportButtons from '../../ui/ExportButtons';
+import * as Icons from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 
 
 
@@ -15,7 +18,9 @@ export default function CategoryList() {
     const [currentCategory, setCurrentCategory] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
-        slug: ''
+        slug: '',
+        icon: '',
+        color: ''
     });
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -60,7 +65,6 @@ export default function CategoryList() {
             ...formData,
             [name]: value
         });
-
         // Clear error when user types
         if (errors[name]) {
             setErrors({
@@ -87,6 +91,8 @@ export default function CategoryList() {
         const newErrors = {};
         if (!formData.name.trim()) newErrors.name = 'Name is required';
         if (!formData.slug.trim()) newErrors.slug = 'Slug is required';
+        if (!formData.color.trim()) newErrors.color = 'Color is required';
+        if (!formData.icon.trim()) newErrors.icon = 'Icon is required';
 
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
@@ -159,7 +165,9 @@ export default function CategoryList() {
         setCurrentCategory(category);
         setFormData({
             name: category.name,
-            slug: category.slug
+            slug: category.slug,
+            icon: category.icon,
+            color: category.color,
         });
         setIsModalOpen(true);
     };
@@ -169,7 +177,9 @@ export default function CategoryList() {
         setCurrentCategory(null);
         setFormData({
             name: '',
-            slug: ''
+            slug: '',
+            icon: '',
+            color: ''
         });
         setErrors({});
         setIsModalOpen(true);
@@ -181,7 +191,9 @@ export default function CategoryList() {
         setCurrentCategory(null);
         setFormData({
             name: '',
-            slug: ''
+            slug: '',
+            icon: '',
+            color: ''
         });
         setErrors({});
     };
@@ -202,8 +214,28 @@ export default function CategoryList() {
             name: 'Slug',
             selector: row => row.slug,
             sortable: true,
-            width: '40%',
+            width: '20%',
         },
+        {
+  name: 'Color',
+  cell: row => (
+    <div className="flex items-center space-x-2">
+      <span className={`h-4 w-4 rounded-full`} style={{ backgroundColor: row.color }}></span>
+      {/* {iconMap[row.icon] && <FontAwesomeIcon icon={iconMap[row.icon]} className="text-lg" />} */}
+    </div>
+  ),
+        },
+        {
+  name: 'Icon',
+  cell: row => (
+    <div className="flex items-center space-x-2">
+      <FontAwesomeIcon style={{color:row.color}} icon={Icons[row.icon]} className="text-lg" />
+    </div>
+  ),
+  width: '20%',
+  sortable: false,
+}
+,
         {
             name: 'Actions',
             cell: row => (
@@ -329,6 +361,53 @@ export default function CategoryList() {
                                 />
                                 {errors.slug && <p className="mt-1 text-sm text-red-600">{errors.slug}</p>}
                             </div>
+                            <div className="mb-4">
+                                <label htmlFor="icon" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Icon Name <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="text"
+                                        id="icon"
+                                        name="icon"
+                                        value={formData.icon}
+                                        onChange={handleInputChange}
+                                        placeholder="e.g., faLaptopCode"
+                                        className={`w-full px-3 py-2 border rounded-md ${errors.icon ? 'border-red-500' : 'border-gray-300'}`}
+                                    />
+                                </div>
+                                {errors.icon && <p className="mt-1 text-sm text-red-600">{errors.icon}</p>}
+                            </div>
+                            <div className="mb-4">
+                                <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Color <span className="text-red-500">*</span>
+                                </label>
+                                <div className="flex items-center space-x-3">
+                                    <input
+                                        type="color"
+                                        id="color"
+                                        name="color"
+                                        value={formData.color || "#4f46e5"} // default to indigo-600 if empty
+                                        onChange={(e) =>
+                                            setFormData({
+                                                ...formData,
+                                                color: e.target.value
+                                            })
+                                        }
+                                        className="h-10 w-14 p-0 border rounded-md cursor-pointer"
+                                    />
+                                    <input
+                                        type="text"
+                                        name="color"
+                                        value={formData.color}
+                                        onChange={handleInputChange}
+                                        placeholder="#hex or color name"
+                                        className={`flex-1 px-3 py-2 border rounded-md ${errors.color ? 'border-red-500' : 'border-gray-300'}`}
+                                    />
+                                </div>
+                                {errors.color && <p className="mt-1 text-sm text-red-600">{errors.color}</p>}
+                            </div>
+
                             <div className="flex justify-end space-x-3 pt-4 border-t">
                                 <button
                                     type="button"
