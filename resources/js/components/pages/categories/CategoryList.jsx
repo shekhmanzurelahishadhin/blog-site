@@ -217,25 +217,25 @@ export default function CategoryList() {
             width: '20%',
         },
         {
-  name: 'Color',
-  cell: row => (
-    <div className="flex items-center space-x-2">
-      <span className={`h-4 w-4 rounded-full`} style={{ backgroundColor: row.color }}></span>
-      {/* {iconMap[row.icon] && <FontAwesomeIcon icon={iconMap[row.icon]} className="text-lg" />} */}
-    </div>
-  ),
+            name: 'Color',
+            cell: row => (
+                <div className="flex items-center space-x-2">
+                    <span className={`h-4 w-4 rounded-full`} style={{ backgroundColor: row.color }}></span>
+                    {/* {iconMap[row.icon] && <FontAwesomeIcon icon={iconMap[row.icon]} className="text-lg" />} */}
+                </div>
+            ),
         },
         {
-  name: 'Icon',
-  cell: row => (
-    <div className="flex items-center space-x-2">
-      <FontAwesomeIcon style={{color:row.color}} icon={Icons[row.icon]} className="text-lg" />
-    </div>
-  ),
-  width: '20%',
-  sortable: false,
-}
-,
+            name: 'Icon',
+            cell: row => (
+                <div className="flex items-center space-x-2">
+                    <FontAwesomeIcon style={{ color: row.color }} icon={Icons[row.icon]} className="text-lg" />
+                </div>
+            ),
+            width: '20%',
+            sortable: false,
+        }
+        ,
         {
             name: 'Actions',
             cell: row => (
