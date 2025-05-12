@@ -1,102 +1,124 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import PostCard from '../../frontend-component/PostCard';
 import Slider from 'react-slick';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faLaptopCode,
-    faBrain,
-    faChartLine,
-    faLightbulb,
-    faBriefcase,
-    faHeartPulse, // Note: 'heartbeat' is now 'heart-pulse' in Font Awesome 6
-    faCoins,
-    faArrowRight,
-    faBars
-} from '@fortawesome/free-solid-svg-icons';
+// import {
+//   faLaptopCode,
+//   faBrain,
+//   faChartLine,
+//   faLightbulb,
+//   faBriefcase,
+//   faHeartPulse, // Note: 'heartbeat' is now 'heart-pulse' in Font Awesome 6
+//   faCoins,
+//   faArrowRight,
+//   faBars
+// } from '@fortawesome/free-solid-svg-icons';
 import { NavLink } from 'react-router-dom';
-const HomePage = () => {
-  const allPosts = [
-        {
-            id: 1,
-            title: "The Future of AI in Everyday Life",
-            excerpt: "Exploring how artificial intelligence will transform our daily routines in the coming decade.",
-            content: "Full content about AI future... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-            category: "Technology",
-            date: "June 15, 2023",
-            image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-            categoryColor: "indigo"
-        },
-        {
-            id: 2,
-            title: "The Science of Habit Formation",
-            excerpt: "Understanding how habits work and how to build better ones using neuroscience.",
-            content: "Full content about habit formation... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-            category: "Psychology",
-            date: "May 28, 2023",
-            image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
-            categoryColor: "purple"
-        },
-        {
-            id: 3,
-            title: "10 Productivity Hacks for Developers",
-            excerpt: "Proven techniques to help you get more done in less time without burning out.",
-            content: "Full content about productivity hacks... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-            category: "Productivity",
-            date: "April 12, 2023",
-            image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-            categoryColor: "blue"
-        },
-        {
-            id: 4,
-            title: "Creative Thinking Techniques",
-            excerpt: "Boost your creativity with these proven thinking methods.",
-            content: "Full content about creative thinking... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-            category: "Creativity",
-            date: "March 5, 2023",
-            image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-            categoryColor: "green"
-        }
-    ];
+import { toast } from 'react-toastify';
+import api from '../../../api/axios';
+import * as Icons from '@fortawesome/free-solid-svg-icons';
 
-    const categories = [
-        { name: "Technology", icon: faLaptopCode, count: 25, color: "indigo" },
-        { name: "Psychology", icon: faBrain, count: 18, color: "purple" },
-        { name: "Productivity", icon: faChartLine, count: 32, color: "blue" },
-        { name: "Creativity", icon: faLightbulb, count: 14, color: "green" },
-        { name: "Business", icon: faBriefcase, count: 22, color: "yellow" },
-        { name: "Health", icon: faHeartPulse, count: 19, color: "red" },
-        { name: "Finance", icon: faCoins, count: 16, color: "teal" }
-    ];
-      const settings = {
-        dots: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                }
-            }
-        ]
-    };
+
+const HomePage = () => {
+
+  const [categories, setCategories] = useState([]);
+  const allPosts = [
+    {
+      id: 1,
+      title: "The Future of AI in Everyday Life",
+      excerpt: "Exploring how artificial intelligence will transform our daily routines in the coming decade.",
+      content: "Full content about AI future... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
+      category: "Technology",
+      date: "June 15, 2023",
+      image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      categoryColor: "indigo"
+    },
+    {
+      id: 2,
+      title: "The Science of Habit Formation",
+      excerpt: "Understanding how habits work and how to build better ones using neuroscience.",
+      content: "Full content about habit formation... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
+      category: "Psychology",
+      date: "May 28, 2023",
+      image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
+      categoryColor: "purple"
+    },
+    {
+      id: 3,
+      title: "10 Productivity Hacks for Developers",
+      excerpt: "Proven techniques to help you get more done in less time without burning out.",
+      content: "Full content about productivity hacks... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
+      category: "Productivity",
+      date: "April 12, 2023",
+      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      categoryColor: "blue"
+    },
+    {
+      id: 4,
+      title: "Creative Thinking Techniques",
+      excerpt: "Boost your creativity with these proven thinking methods.",
+      content: "Full content about creative thinking... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
+      category: "Creativity",
+      date: "March 5, 2023",
+      image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+      categoryColor: "green"
+    }
+  ];
+
+  // const categories = [
+  //     { name: "Technology", icon: faLaptopCode, count: 25, color: "indigo" },
+  //     { name: "Psychology", icon: faBrain, count: 18, color: "purple" },
+  //     { name: "Productivity", icon: faChartLine, count: 32, color: "blue" },
+  //     { name: "Creativity", icon: faLightbulb, count: 14, color: "green" },
+  //     { name: "Business", icon: faBriefcase, count: 22, color: "yellow" },
+  //     { name: "Health", icon: faHeartPulse, count: 19, color: "red" },
+  //     { name: "Finance", icon: faCoins, count: 16, color: "teal" }
+  // ];
+  // Fetch categories from Laravel API
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/category-list');
+      setCategories(res.data.data);
+      console.log(res.data.data);
+    } catch (error) {
+      toast.error('Failed to fetch categories');
+      localStorage.removeItem('auth_token');
+    } finally {
+    }
+  };
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        }
+      },
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]
+  };
   return (
     <div className="">
 
@@ -142,11 +164,11 @@ const HomePage = () => {
                 <div
                   className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-slow text-center block h-full cursor-pointer"
                 >
-                  <div className={`text-${category.color}-600 mb-4`}>
-                    <FontAwesomeIcon icon={category.icon} className="text-3xl" />
+                  <div className={`mb-4`}>
+                    <FontAwesomeIcon style={{ color: category.color }} icon={Icons[category.icon]} className="text-3xl" />
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
-                  <p className="text-gray-600 text-sm">{category.count} Articles</p>
+                  <p className="text-gray-600 text-sm">20 Articles</p>
                 </div>
               </div>
             ))}
@@ -186,7 +208,7 @@ const HomePage = () => {
                     to={`/post/${post.id}`}
                     className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center no-underline"
                   >
-                    Read More <FontAwesomeIcon icon={faArrowRight} className="ml-2 text-sm" />
+                    Read More <FontAwesomeIcon icon={Icons['faArrowRight']} className="ml-2 text-sm" />
                   </NavLink>
                 </div>
               </div>
