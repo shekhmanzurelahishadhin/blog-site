@@ -343,15 +343,11 @@ const PostDetailsPage = () => {
                                             <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
                                                 {relatedPost.categories?.[0]?.name || 'Uncategorized'}
                                             </span>
-                                            <span className="mx-2">•</span>
-                                            <span className="flex items-center">
-                                                <FontAwesomeIcon icon={faClock} className="mr-1 text-xs" />
-                                                {relatedPost.read_time || '5 min'} read
-                                            </span>
+
                                         </div>
                                         <h3 className="text-xl font-bold mb-3">{relatedPost.title}</h3>
                                         <Link
-                                            to={`/post/${relatedPost.slug}`}
+                                            to={`/posts/${relatedPost.slug}`}
                                             className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center"
                                         >
                                             Read More <FontAwesomeIcon icon={faArrowRight} className="ml-2 text-sm" />
@@ -540,7 +536,7 @@ const PostDetailsPage = () => {
                     <ul className="space-y-2">
                         {categories.map(category => (
                             <li key={category.id}>
-                                <Link 
+                                <Link
                                     to={`/posts?category=${encodeURIComponent(category.name)}`}
                                     className="flex items-center justify-between py-2 px-3 rounded-md hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors"
                                 >
@@ -553,14 +549,14 @@ const PostDetailsPage = () => {
                         ))}
                     </ul>
                 </div>
-                
+
                 {/* Popular Posts Widget */}
                 <div className="bg-white p-6 rounded-lg shadow-sm">
                     <h3 className="font-bold text-lg mb-4">Popular Posts</h3>
                     <div className="space-y-4">
                         {relatedPosts.slice(0, 3).map(post => (
-                            <Link 
-                                key={post.id} 
+                            <Link
+                                key={post.id}
                                 to={`/posts/${post.slug}`}
                                 className="block hover:bg-gray-50 p-2 rounded transition-colors"
                             >
@@ -580,13 +576,13 @@ const PostDetailsPage = () => {
                     <h3 className="font-bold text-lg mb-2">Stay Updated</h3>
                     <p className="text-sm text-gray-600 mb-4">Subscribe to our newsletter for the latest posts</p>
                     <form className="space-y-3">
-                        <input 
-                            type="email" 
-                            placeholder="Your email address" 
+                        <input
+                            type="email"
+                            placeholder="Your email address"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent text-sm"
                         />
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors text-sm"
                         >
                             Subscribe

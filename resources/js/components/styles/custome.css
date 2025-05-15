@@ -183,7 +183,7 @@
   font-size: 0.85rem;
 }
 
-.nested-submenu-link:hover, 
+.nested-submenu-link:hover,
 .nested-submenu-link.active {
   color: white;
 }
@@ -253,7 +253,7 @@
     .sidebar {
       transform: translateX(-100%);
     }
-    
+
     .sidebar.open {
       transform: translateX(0);
     }
@@ -312,7 +312,7 @@
       padding: 0;
     }
   }
-  
+
   code:not(pre code) {
     background-color: #1e293b;
     color: #f1f5f9;
@@ -321,3 +321,11 @@
   }
 /* } */
 
+ /*// Add to CSS:*/
+  @keyframes wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.3); }
+  }
+  .animate-wave {
+       animation: wave 1s ease-in-out infinite;
+    }

@@ -266,7 +266,7 @@ export default function PostList() {
       description: post.description || '',
       category_ids: Array.isArray(post.categories) ? post.categories.map(cat => cat.id) : [],
       image: post.image, // Reset on edit
-      active: post.active, //  0/1 
+      active: post.active, //  0/1
       published_at: post.published_at ? moment(post.published_at).format('YYYY-MM-DD') : ''
     });
     setSelectedCategories(
@@ -455,13 +455,13 @@ export default function PostList() {
                     onChange={(e) => {
                       handleInputChange(e);
                       // Auto-generate slug when title changes (only for new posts)
-                      if (!currentPost) {
+                      // if (!currentPost) {
                         setFormData({
                           ...formData,
                           title: e.target.value,
                           slug: generateSlug(e.target.value)
                         });
-                      }
+                      // }
                     }}
                     className={`w-full px-3 py-2 border rounded-md ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
                   />

@@ -20,7 +20,7 @@ const AllPostsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 8;
+  const postsPerPage = 6;
 
   // Fetch categories from Laravel API
   const fetchCategories = async () => {

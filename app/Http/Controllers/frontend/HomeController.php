@@ -59,6 +59,7 @@ class HomeController extends Controller
         // Get related posts with at least one matching category
         $relatedPosts = Post::with(['categories', 'user'])
             ->where('posts.id', '!=', $currentPost->id) // Explicitly specify table
+            ->where('active', 1)
             ->whereHas('categories', function($query) use ($categoryIds) {
                 $query->whereIn('categories.id', $categoryIds); // Explicitly specify table
             })
