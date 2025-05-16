@@ -548,7 +548,12 @@ export default function PostList() {
                 <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
                   Description <span className="text-red-500">*</span>
                 </label>
-                <RichTextEditor content={formData.description} onChange={handleDescriptionChange} className="min-h-[300px] p-4 bg-white focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none" />
+                {/* <RichTextEditor content={formData.description} onChange={handleDescriptionChange} className="min-h-[300px] p-4 bg-white focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none" /> */}
+                <RichTextEditor
+                  content={formData.description}
+                  onChange={handleDescriptionChange}
+                  className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl"
+                />
                 {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
               </div>
 

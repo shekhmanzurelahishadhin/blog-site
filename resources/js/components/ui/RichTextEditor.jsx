@@ -53,7 +53,7 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        codeBlock: false, // for future CodeBlockLowlight
+        // codeBlock: false, // for future CodeBlockLowlight
         heading: {
           levels: [1, 2, 3],
         },

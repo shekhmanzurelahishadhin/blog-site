@@ -299,4 +299,25 @@
   padding: 0.5rem;
   text-align: left;
 }
+/* .rich-text-editor-content { */
+  pre {
+    background-color: #1e293b !important;  /* Dark background */
+    color: #f1f5f9; /* Light text */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+  }
+  
+  code:not(pre code) {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+/* } */
 
