@@ -11,11 +11,11 @@ function ImageDropzone({
   const [image, setImage] = useState(null); // local preview state
 
   // Set initial image (useful for edit mode)
-  useEffect(() => {
-    if (initialImage) {
-      setImage({  preview: `${import.meta.env.VITE_BACKEND_URL}/storage/${initialImage}` });
-    }
-  }, [initialImage]);
+useEffect(() => {
+  if (initialImage && !image) {
+    setImage({ preview: `${import.meta.env.VITE_BACKEND_URL}/storage/${initialImage}` });
+  }
+}, [initialImage, image]);
 
   // Handle image drop or selection
   const onDrop = useCallback((acceptedFiles) => {
