@@ -13,10 +13,12 @@ import {
   faReply,
   faEllipsisV
 } from '@fortawesome/free-solid-svg-icons';
+import api from '../../../api/axios';
+import Preloader from '../../ui/Preloader';
 
 const PostDetails = () => {
-  const { id } = useParams();
-  const [post, setPost] = useState(null);
+    const { slug } = useParams();
+    const [post, setPost] = useState([]);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -67,58 +69,22 @@ const PostDetails = () => {
 
   // Fetch post data (replace with your API call)
   useEffect(() => {
-    const fetchPost = async () => {
-      // Mock data
-      const mockPost = {
-        id: 1,
-        title: "The Future of AI in Everyday Life",
-        content: `
-          <h2>Introduction to AI's Impact</h2>
-          <p>Artificial Intelligence is transforming how we live, work, and interact with technology.</p>
-          <h3>Key Areas of Transformation</h3>
-          <ul>
-            <li>Healthcare diagnostics</li>
-            <li>Personalized education</li>
-            <li>Smart home automation</li>
-          </ul>
-          <blockquote>
-            "AI will be the most transformative technology humanity has ever developed."
-            <cite>- AI Researcher</cite>
-          </blockquote>
-        `,
-        category: "Technology",
-        date: "June 15, 2023",
-        readTime: "8 min read",
-        author: "Jane Doe",
-        image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80",
-        likes: 124,
-        tags: ["AI", "Future Tech", "Innovation"]
-      };
+        const fetchPost = async () => {
+            try {
+                const res = await api.get(`/posts/${slug}`);
+                setPost(res.data.data);
+            } catch (error) {
+                console.error('Failed to fetch post details', error);
+            }
+        };
 
-      setPost(mockPost);
-      setLikeCount(mockPost.likes);
-
-      // Mock related posts
-      setRelatedPosts([
-        {
-          id: 2,
-          title: "Machine Learning Fundamentals",
-          excerpt: "Understanding the basics of machine learning algorithms.",
-          category: "Technology",
-          date: "May 28, 2023",
-          readTime: "6 min read",
-          image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
-        }
-      ]);
-    };
-
-    fetchPost();
-  }, [id]);
+        fetchPost();
+    }, [slug]);
 
   // Comment handlers
   const handleCommentSubmit = () => {
     if (!newComment.trim()) return;
-    
+
     const newCommentObj = {
       id: Date.now(),
       author: currentUser,
@@ -128,7 +94,7 @@ const PostDetails = () => {
       liked: false,
       replies: []
     };
-    
+
     setComments([...comments, newCommentObj]);
     setNewComment('');
     setShowCommentForm(false);
@@ -136,7 +102,7 @@ const PostDetails = () => {
 
   const handleReplySubmit = (commentId) => {
     if (!replyText.trim()) return;
-    
+
     const updatedComments = comments.map(comment => {
       if (comment.id === commentId) {
         const newReply = {
@@ -147,7 +113,7 @@ const PostDetails = () => {
           likes: 0,
           liked: false
         };
-        
+
         return {
           ...comment,
           replies: [...comment.replies, newReply]
@@ -155,7 +121,7 @@ const PostDetails = () => {
       }
       return comment;
     });
-    
+
     setComments(updatedComments);
     setReplyText('');
     setActiveReplyId(null);
@@ -215,15 +181,13 @@ const PostDetails = () => {
     });
   };
 
-  if (!post) {
-    return <div className="text-center py-20">Loading post...</div>;
-  }
+ if (!post) return <Preloader />;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Back Button */}
-      <Link 
-        to="/posts" 
+      <Link
+        to="/posts"
         className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-8"
       >
         <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
@@ -249,54 +213,44 @@ const PostDetails = () => {
             {post.readTime}
           </span>
         </div>
+
         
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
-        
+
         {/* Featured Image */}
-        <img 
-          src={post.image} 
-          alt={post.title} 
+        <img
+          src={`${import.meta.env.VITE_BACKEND_URL}/storage/${post.image}`}
+          alt={post.title}
           className="w-full h-64 md:h-96 object-cover rounded-lg mb-8"
         />
       </div>
 
       {/* Article Content */}
       <div className="prose max-w-none mb-12">
-        <div dangerouslySetInnerHTML={{ __html: post.content }} />
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: post.description }} />
       </div>
 
-      {/* Tags */}
-      <div className="flex flex-wrap gap-2 mb-12">
-        {post.tags.map(tag => (
-          <span 
-            key={tag} 
-            className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
-          >
-            #{tag}
-          </span>
-        ))}
-      </div>
 
       {/* Action Buttons */}
       <div className="flex flex-wrap justify-between items-center mb-12 border-t border-b border-gray-200 py-4">
         <div className="flex items-center space-x-4">
-          <button 
+          <button
             onClick={handleLike}
             className={`flex items-center space-x-1 ${isLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500`}
           >
             <FontAwesomeIcon icon={faHeart} />
             <span>{likeCount}</span>
           </button>
-          
-          <button 
+
+          <button
             onClick={handleBookmark}
             className={`${isBookmarked ? 'text-indigo-600' : 'text-gray-500'} hover:text-indigo-600`}
           >
             <FontAwesomeIcon icon={faBookmark} />
           </button>
         </div>
-        
-        <button 
+
+        <button
           onClick={handleShare}
           className="text-gray-500 hover:text-indigo-600"
         >
@@ -328,9 +282,9 @@ const PostDetails = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedPosts.map(relatedPost => (
               <div key={relatedPost.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-                <img 
-                  src={relatedPost.image} 
-                  alt={relatedPost.title} 
+                <img
+                  src={relatedPost.image}
+                  alt={relatedPost.title}
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-6">
@@ -345,8 +299,8 @@ const PostDetails = () => {
                     </span>
                   </div>
                   <h3 className="text-xl font-bold mb-3">{relatedPost.title}</h3>
-                  <Link 
-                    to={`/post/${relatedPost.id}`} 
+                  <Link
+                    to={`/post/${relatedPost.id}`}
                     className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center"
                   >
                     Read More <FontAwesomeIcon icon={faArrowRight} className="ml-2 text-sm" />
@@ -364,7 +318,7 @@ const PostDetails = () => {
           <h2 className="text-2xl font-bold text-gray-900">
             Discussion ({comments.length})
           </h2>
-          <button 
+          <button
             onClick={() => setShowCommentForm(!showCommentForm)}
             className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
           >
