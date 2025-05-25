@@ -17,8 +17,8 @@ import api from '../../../api/axios';
 import Preloader from '../../ui/Preloader';
 
 const PostDetails = () => {
-    const { slug } = useParams();
-    const [post, setPost] = useState([]);
+  const { slug } = useParams();
+  const [post, setPost] = useState([]);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -69,17 +69,17 @@ const PostDetails = () => {
 
   // Fetch post data (replace with your API call)
   useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const res = await api.get(`/posts/${slug}`);
-                setPost(res.data.data);
-            } catch (error) {
-                console.error('Failed to fetch post details', error);
-            }
-        };
+    const fetchPost = async () => {
+      try {
+        const res = await api.get(`/posts/${slug}`);
+        setPost(res.data.data);
+      } catch (error) {
+        console.error('Failed to fetch post details', error);
+      }
+    };
 
-        fetchPost();
-    }, [slug]);
+    fetchPost();
+  }, [slug]);
 
   // Comment handlers
   const handleCommentSubmit = () => {
@@ -181,7 +181,7 @@ const PostDetails = () => {
     });
   };
 
- if (!post) return <Preloader />;
+  if (!post) return <Preloader />;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -197,24 +197,21 @@ const PostDetails = () => {
       {/* Article Header */}
       <div className="mb-8">
         <div className="flex items-center text-sm text-gray-500 mb-4">
-          <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs mr-3">
-            {post.category}
-          </span>
           <span className="flex items-center mr-4">
             <FontAwesomeIcon icon={faUser} className="mr-1 text-xs" />
-            {post.author}
+            {post.user?.name}
           </span>
           <span className="flex items-center mr-4">
             <FontAwesomeIcon icon={faCalendarAlt} className="mr-1 text-xs" />
-            {post.date}
-          </span>
-          <span className="flex items-center">
-            <FontAwesomeIcon icon={faClock} className="mr-1 text-xs" />
-            {post.readTime}
+            {new Date(post.published_at).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </span>
         </div>
 
-        
+
 
         {/* Featured Image */}
         <img
@@ -227,6 +224,16 @@ const PostDetails = () => {
       {/* Article Content */}
       <div className="prose max-w-none mb-12">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+        <div className="flex flex-wrap gap-2 mb-2">
+          {post.categories?.map((category) => (
+            <span
+              key={category.id}
+              className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs"
+            >
+              {category.name}
+            </span>
+          ))}
+        </div>
         <div dangerouslySetInnerHTML={{ __html: post.description }} />
       </div>
 

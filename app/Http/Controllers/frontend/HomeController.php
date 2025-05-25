@@ -28,7 +28,7 @@ class HomeController extends Controller
 
     public function showPostDetails($slug)
     {
-        $post = Post::with('categories:id,name,color')->where('slug', $slug)->firstOrFail();
+        $post = Post::with('categories:id,name,color', 'user:id,name')->where('slug', $slug)->firstOrFail();
           return response()->json([
             'message' => 'Post list fetched.',
             'data' => $post,
