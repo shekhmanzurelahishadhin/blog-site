@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PostCard from '../../frontend-component/PostCard';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import Slider from 'react-slick';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import {
@@ -23,36 +25,43 @@ const HomePage = () => {
 
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
+
 
 
   // Fetch categories from Laravel API
   const fetchCategories = async () => {
+    setCategoriesLoading(true);
     try {
       const res = await api.get('/category-list');
       setCategories(res.data.data);
-      console.log(res.data.data);
     } catch (error) {
       toast.error('Failed to fetch categories');
       localStorage.removeItem('auth_token');
     } finally {
+      setCategoriesLoading(false);
     }
   };
+
   useEffect(() => {
     fetchCategories();
   }, []);
 
   // Fetch Posts from Laravel API
   const fetchPosts = async () => {
+    setPostsLoading(true);
     try {
       const res = await api.get('/post-list');
       setPosts(res.data.data);
-      console.log(res.data.data);
     } catch (error) {
       toast.error('Failed to fetch posts');
       localStorage.removeItem('auth_token');
     } finally {
+      setPostsLoading(false);
     }
   };
+
   useEffect(() => {
     fetchPosts();
   }, []);
@@ -126,20 +135,35 @@ const HomePage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold text-center mb-12">Explore By <span className="gradient-text">Categories</span></h2>
           <Slider {...settings}>
-            {categories.map((category, index) => (
-              <div key={index} className="px-2">
-                <div
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-slow text-center block h-full cursor-pointer"
-                >
-                  <div className={`mb-4`}>
-                    <FontAwesomeIcon style={{ color: category.color }} icon={Icons[category.icon]} className="text-3xl" />
+            {categoriesLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="px-2">
+                  <div className="bg-white p-6 rounded-lg shadow-md h-full text-center">
+                    <Skeleton circle height={40} width={40} className="mx-auto mb-4" />
+                    <Skeleton height={20} width={100} className="mx-auto mb-2" />
+                    <Skeleton height={14} width={60} className="mx-auto" />
                   </div>
-                  <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
-                  <p className="text-gray-600 text-sm">20 Articles</p>
                 </div>
-              </div>
-            ))}
+              ))
+              : categories.map((category, index) => (
+                <div key={index} className="px-2">
+                  <div
+                    className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-slow text-center block h-full cursor-pointer"
+                  >
+                    <div className={`mb-4`}>
+                      <FontAwesomeIcon
+                        style={{ color: category.color }}
+                        icon={Icons[category.icon]}
+                        className="text-3xl"
+                      />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
+                    <p className="text-gray-600 text-sm">20 Articles</p>
+                  </div>
+                </div>
+              ))}
           </Slider>
+
         </div>
       </section>
 
@@ -154,63 +178,61 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {posts.map((post) => {
-              // Format published date
-              const date = new Date(post.published_at).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-              });
-
-              // Extract plain text from HTML description
-              const tempDiv = document.createElement('div');
-              tempDiv.innerHTML = post.description || '';
-              const excerpt = tempDiv.textContent?.substring(0, 150) + '...';
-
-              return (
-                <div key={post.id} className="bg-white rounded-lg overflow-hidden shadow-md card-hover transition-slow">
-                  <img
-                    src={post.image?.startsWith('http') ? post.image : `/storage/${post.image}`}
-                    alt="Post thumbnail"
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-6">
-                    {/* Categories */}
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {post.categories?.map((category) => (
-                        <span
-                          key={category.id}
-                          className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs"
-                        >
-                          {category.name}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Date */}
-                    <div className="text-sm text-gray-500 mb-1">
-                      {date}
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="text-xl font-bold mb-3">{post.title}</h3>
-
-                    {/* Excerpt */}
-                    <p className="text-gray-600 mb-4">{excerpt}</p>
-
-                    {/* Read More */}
-                    <NavLink
-                      to={`/posts/${post.slug}`}
-                      className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center no-underline"
-                    >
-                      Read More <FontAwesomeIcon icon={Icons['faArrowRight']} className="ml-2 text-sm" />
-                    </NavLink>
-                  </div>
+            {postsLoading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md p-6">
+                  <Skeleton height={180} className="mb-4" />
+                  <Skeleton height={20} width={100} className="mb-2" />
+                  <Skeleton height={24} width={`80%`} className="mb-2" />
+                  <Skeleton count={3} />
                 </div>
-              );
-            })}
+              ))
+              : posts.map((post) => {
+                const date = new Date(post.published_at).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                });
 
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = post.description || '';
+                const excerpt = tempDiv.textContent?.substring(0, 150) + '...';
+
+                return (
+                  <div key={post.id} className="bg-white rounded-lg overflow-hidden shadow-md card-hover transition-slow">
+                    <img
+                      src={post.image?.startsWith('http') ? post.image : `/storage/${post.image}`}
+                      alt="Post thumbnail"
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-6">
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {post.categories?.map((category) => (
+                          <span
+                            key={category.id}
+                            className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs"
+                          >
+                            {category.name}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="text-sm text-gray-500 mb-1">{date}</div>
+                      <h3 className="text-xl font-bold mb-3">{post.title}</h3>
+                      <p className="text-gray-600 mb-4">{excerpt}</p>
+
+                      <NavLink
+                        to={`/posts/${post.slug}`}
+                        className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center no-underline"
+                      >
+                        Read More <FontAwesomeIcon icon={Icons['faArrowRight']} className="ml-2 text-sm" />
+                      </NavLink>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
+
         </div>
       </section>
 
