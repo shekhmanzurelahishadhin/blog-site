@@ -6,10 +6,12 @@ import App from './components/App';
 import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './auth/AuthContext';
+import ScrollToTop from './components/ui/ScrollToTop';
 
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(
     <BrowserRouter>
+      <ScrollToTop />
         <AuthProvider>
             <App />
         </AuthProvider>
