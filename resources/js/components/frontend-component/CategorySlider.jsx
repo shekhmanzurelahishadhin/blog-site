@@ -3,6 +3,7 @@ import Skeleton from 'react-loading-skeleton';
 import Slider from 'react-slick';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
+import * as BrandIcon from '@fortawesome/free-brands-svg-icons';
 
 const CategorySlider = ({ categories, loading }) => {
   const settings = {
@@ -30,7 +31,7 @@ const CategorySlider = ({ categories, loading }) => {
               <div key={index} className="px-2">
                 <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-slow text-center block h-full">
                   <div className="mb-4">
-                    <FontAwesomeIcon style={{ color: category.color }} icon={Icons[category.icon]} className="text-3xl" />
+                    <FontAwesomeIcon style={{ color: category.color }} icon={Icons[category.icon] || BrandIcon[category.icon]} className="text-3xl" />
                   </div>
                   <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
                   <p className="text-gray-600 text-sm">20 Articles</p>

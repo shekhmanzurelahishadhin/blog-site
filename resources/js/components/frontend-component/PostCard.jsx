@@ -21,7 +21,7 @@ const PostCard = ({ post }) => {
         </div>
         <div className="text-sm text-gray-500 mb-1">{date}</div>
         <NavLink to={`/posts/${post.slug}`}>
-          <h3 className="text-xl font-bold mb-3">{post.title}</h3>
+          <h3 className="text-indigo-600 text-xl font-bold mb-3">{post.title}</h3>
         </NavLink>
         <p className="text-gray-600 mb-4">{excerpt}</p>
         <NavLink to={`/posts/${post.slug}`} className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center">

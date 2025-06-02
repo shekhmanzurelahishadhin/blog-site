@@ -8,6 +8,7 @@ import DataTable from 'react-data-table-component';
 import ExportButtons from '../../ui/ExportButtons';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as BrandIcon from '@fortawesome/free-brands-svg-icons';
 
 
 
@@ -229,7 +230,7 @@ export default function CategoryList() {
             name: 'Icon',
             cell: row => (
                 <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon style={{ color: row.color }} icon={Icons[row.icon]} className="text-lg" />
+                    <FontAwesomeIcon style={{ color: row.color }} icon={Icons[row.icon] || BrandIcon[row.icon]} className="text-lg" />
                 </div>
             ),
             width: '20%',
