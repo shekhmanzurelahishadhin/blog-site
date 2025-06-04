@@ -1,21 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import PostCard from '../../frontend-component/PostCard';
-import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import Slider from 'react-slick';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import {
-//   faLaptopCode,
-//   faBrain,
-//   faChartLine,
-//   faLightbulb,
-//   faBriefcase,
-//   faHeartPulse, // Note: 'heartbeat' is now 'heart-pulse' in Font Awesome 6
-//   faCoins,
-//   faArrowRight,
-//   faBars
-// } from '@fortawesome/free-solid-svg-icons';
-import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../../api/axios';
 import * as Icons from '@fortawesome/free-solid-svg-icons';
@@ -56,7 +40,7 @@ const HomePage = () => {
   const fetchPosts = async () => {
     setPostsLoading(true);
     try {
-      const res = await api.get('/post-list');
+      const res = await api.get('/post-list?limit=6&sort=desc');
       setPosts(res.data.data);
     } catch (error) {
       toast.error('Failed to fetch posts');

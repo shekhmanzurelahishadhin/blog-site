@@ -2,87 +2,92 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faClock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+import api from '../../../api/axios';
+import PostCard from '../../frontend-component/PostCard';
+import Skeleton from 'react-loading-skeleton';
 
 const AllPostsPage = () => {
-  // Sample post data (replace with API fetch)
- const allPosts = [
-         {
-             id: 1,
-             title: "The Future of AI in Everyday Life",
-             excerpt: "Exploring how artificial intelligence will transform our daily routines in the coming decade.",
-             content: "Full content about AI future... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-             category: "Technology",
-             date: "June 15, 2023",
-             image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-             categoryColor: "indigo"
-         },
-         {
-             id: 2,
-             title: "The Science of Habit Formation",
-             excerpt: "Understanding how habits work and how to build better ones using neuroscience.",
-             content: "Full content about habit formation... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-             category: "Psychology",
-             date: "May 28, 2023",
-             image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80",
-             categoryColor: "purple"
-         },
-         {
-             id: 3,
-             title: "10 Productivity Hacks for Developers",
-             excerpt: "Proven techniques to help you get more done in less time without burning out.",
-             content: "Full content about productivity hacks... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-             category: "Productivity",
-             date: "April 12, 2023",
-             image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-             categoryColor: "blue"
-         },
-         {
-             id: 4,
-             title: "Creative Thinking Techniques",
-             excerpt: "Boost your creativity with these proven thinking methods.",
-             content: "Full content about creative thinking... Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.",
-             category: "Creativity",
-             date: "March 5, 2023",
-             image: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
-             categoryColor: "green"
-         }
-     ];
- 
-
-
   // State management
-  const [posts, setPosts] = useState(allPosts);
+
+  const [categories, setCategories] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 2;
+  const postsPerPage = 8;
 
+  // Fetch categories from Laravel API
+  const fetchCategories = async () => {
+    setCategoriesLoading(true);
+    try {
+      const res = await api.get('/category-list');
+      setCategories(res.data.data);
+    } catch (error) {
+      toast.error('Failed to fetch categories');
+      localStorage.removeItem('auth_token');
+    } finally {
+      setCategoriesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // Fetch Posts from Laravel API
+  const fetchPosts = async () => {
+    setPostsLoading(true);
+    try {
+      const res = await api.get('/post-list');
+      setPosts(res.data.data);
+      setFilteredPosts(res.data.data);
+    } catch (error) {
+      toast.error('Failed to fetch posts');
+      localStorage.removeItem('auth_token');
+    } finally {
+      setPostsLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
   // Get unique categories
-  const categories = ['All', ...new Set(allPosts.map(post => post.category))];
+  const categoryNames = ['All', ...new Set(categories.map(category => category?.name))];
 
   // Filter posts based on search and category
+    // Filter posts based on searchQuery and selectedCategory
   useEffect(() => {
-    let filteredPosts = allPosts;
-    
+    let tempPosts = posts;
+
     if (searchQuery) {
-      filteredPosts = filteredPosts.filter(post =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
+      const q = searchQuery.toLowerCase();
+      tempPosts = tempPosts.filter(post =>
+        post.title.toLowerCase().includes(q) ||
+        post.slug.toLowerCase().includes(q)
       );
     }
-    
+
     if (selectedCategory !== 'All') {
-      filteredPosts = filteredPosts.filter(post => post.category === selectedCategory);
-    }
-    
-    setPosts(filteredPosts);
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [searchQuery, selectedCategory]);
+  tempPosts = tempPosts.filter(post =>
+    post.categories.some(cat => cat.name === selectedCategory)
+  );
+}
+
+
+    setFilteredPosts(tempPosts);
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory, posts]);
 
   // Pagination logic
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
   return (
@@ -90,7 +95,7 @@ const AllPostsPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">All Articles</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">All Posts</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Browse through our collection of insightful articles on various topics.
           </p>
@@ -111,7 +116,7 @@ const AllPostsPage = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
+
             <div className="relative w-full md:w-48">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FontAwesomeIcon icon={faFilter} className="text-gray-400" />
@@ -121,8 +126,8 @@ const AllPostsPage = () => {
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
-                {categories.map((category) => (
-                  <option key={category} value={category}>{category}</option>
+                {categoryNames.map((categoryName) => (
+                  <option key={categoryName} value={categoryName}>{categoryName}</option>
                 ))}
               </select>
             </div>
@@ -132,40 +137,25 @@ const AllPostsPage = () => {
         {/* Posts Grid */}
         {currentPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {currentPosts.map((post) => (
-              <div key={post.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-                <img 
-                  src={post.image} 
-                  alt={post.title} 
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
-                    <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs">
-                      {post.category}
-                    </span>
-                    <span className="mx-2">•</span>
-                    <span className="flex items-center">
-                      <FontAwesomeIcon icon={faClock} className="mr-1 text-xs" />
-                      {post.readTime}
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{post.title}</h3>
-                  <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                  <Link 
-                    to={`/post/${post.id}`} 
-                    className="text-indigo-600 font-medium hover:text-indigo-800 flex items-center"
-                  >
-                    Read More <FontAwesomeIcon icon={faArrowRight} className="ml-2 text-sm" />
-                  </Link>
+            {
+              postsLoading ? Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md p-6">
+                  <Skeleton height={180} className="mb-4" />
+                  <Skeleton height={20} width={100} className="mb-2" />
+                  <Skeleton height={24} width="80%" className="mb-2" />
+                  <Skeleton count={3} />
                 </div>
-              </div>
-            ))}
+              ))
+                :
+                currentPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))
+            }
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <h3 className="text-xl font-medium text-gray-600">No articles found matching your criteria</h3>
-            <button 
+            <button
               onClick={() => {
                 setSelectedCategory('All');
                 setSearchQuery('');
@@ -188,7 +178,7 @@ const AllPostsPage = () => {
               >
                 Previous
               </button>
-              
+
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
@@ -198,7 +188,7 @@ const AllPostsPage = () => {
                   {page}
                 </button>
               ))}
-              
+
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}

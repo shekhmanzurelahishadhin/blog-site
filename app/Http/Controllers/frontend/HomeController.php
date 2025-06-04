@@ -11,20 +11,34 @@ class HomeController extends Controller
 {
     public function categoryList()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::withCount('posts')->latest()->get();
         return response()->json([
             'message' => 'Category list fetched.',
             'data' => $categories,
         ], 200);
     }
-    public function postList()
+
+    public function postList(Request $request)
     {
-        $posts = Post::with('categories:id,name,color')->where('active',1)->latest()->take(6)->get();
+        $limit = $request->query('limit'); // may be null
+        $sort = $request->query('sort', 'desc'); // default desc if not sent
+
+        $query = Post::with('categories:id,name,color')
+            ->where('active', 1)
+            ->orderBy('created_at', $sort);
+
+        if ($limit) {
+            $query->take($limit);
+        }
+
+        $posts = $query->get();
+
         return response()->json([
             'message' => 'Post list fetched.',
             'data' => $posts,
         ], 200);
     }
+
 
     public function showPostDetails($slug)
     {
