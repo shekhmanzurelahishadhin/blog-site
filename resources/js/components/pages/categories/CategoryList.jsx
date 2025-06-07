@@ -209,13 +209,13 @@ export default function CategoryList() {
             name: 'Name',
             selector: row => row.name,
             sortable: true,
-            width: '40%', // Adjust width
+            width: '25%', // Adjust width
         },
         {
             name: 'Slug',
             selector: row => row.slug,
             sortable: true,
-            width: '20%',
+            width: '25%',
         },
         {
             name: 'Color',
@@ -225,6 +225,7 @@ export default function CategoryList() {
                     {/* {iconMap[row.icon] && <FontAwesomeIcon icon={iconMap[row.icon]} className="text-lg" />} */}
                 </div>
             ),
+            width: '15%',
         },
         {
             name: 'Icon',
@@ -233,7 +234,7 @@ export default function CategoryList() {
                     <FontAwesomeIcon style={{ color: row.color }} icon={Icons[row.icon] || BrandIcon[row.icon]} className="text-lg" />
                 </div>
             ),
-            width: '20%',
+            width: '15%',
             sortable: false,
         }
         ,
