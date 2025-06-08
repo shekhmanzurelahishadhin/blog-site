@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faClock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
@@ -9,14 +9,16 @@ import Skeleton from 'react-loading-skeleton';
 
 const AllPostsPage = () => {
   // State management
-
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const initialCategory = params.get("category") || "All";
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 8;
 
@@ -61,7 +63,7 @@ const AllPostsPage = () => {
   const categoryNames = ['All', ...new Set(categories.map(category => category?.name))];
 
   // Filter posts based on search and category
-    // Filter posts based on searchQuery and selectedCategory
+  // Filter posts based on searchQuery and selectedCategory
   useEffect(() => {
     let tempPosts = posts;
 
@@ -74,10 +76,10 @@ const AllPostsPage = () => {
     }
 
     if (selectedCategory !== 'All') {
-  tempPosts = tempPosts.filter(post =>
-    post.categories.some(cat => cat.name === selectedCategory)
-  );
-}
+      tempPosts = tempPosts.filter(post =>
+        post.categories.some(cat => cat.name === selectedCategory)
+      );
+    }
 
 
     setFilteredPosts(tempPosts);

@@ -29,7 +29,7 @@ const CategorySlider = ({ categories, loading }) => {
               </div>
             ))
             : categories.map((category, index) => (
-              <NavLink to="/posts">
+              <NavLink to={`/posts?category=${encodeURIComponent(category.name)}`}>
                 <div key={index} className="px-2">
                   <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-slow text-center block h-full">
                     <div className="mb-4">
