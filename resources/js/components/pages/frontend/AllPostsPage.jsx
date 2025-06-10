@@ -92,6 +92,14 @@ const AllPostsPage = () => {
   const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
   const totalPages = Math.ceil(posts.length / postsPerPage);
 
+
+  const resetFilters = () => {
+    setSelectedCategory("All");
+    setSearchQuery("");
+    setFilteredPosts(posts);
+  };
+
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,37 +145,35 @@ const AllPostsPage = () => {
         </div>
 
         {/* Posts Grid */}
-        {currentPosts.length > 0 ? (
+        {postsLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {
-              postsLoading ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md p-6">
-                  <Skeleton height={180} className="mb-4" />
-                  <Skeleton height={20} width={100} className="mb-2" />
-                  <Skeleton height={24} width="80%" className="mb-2" />
-                  <Skeleton count={3} />
-                </div>
-              ))
-                :
-                currentPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))
-            }
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md p-6">
+                <Skeleton height={180} className="mb-4" />
+                <Skeleton height={20} width={100} className="mb-2" />
+                <Skeleton height={24} width="80%" className="mb-2" />
+                <Skeleton count={3} />
+              </div>
+            ))}
+          </div>
+        ) : currentPosts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {currentPosts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-lg shadow-sm">
             <h3 className="text-xl font-medium text-gray-600">No articles found matching your criteria</h3>
             <button
-              onClick={() => {
-                setSelectedCategory('All');
-                setSearchQuery('');
-              }}
+              onClick={resetFilters}
               className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
             >
               Reset Filters
             </button>
           </div>
         )}
+
 
         {/* Pagination */}
         {totalPages > 1 && (
