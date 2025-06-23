@@ -43,7 +43,12 @@ export const AuthProvider = ({ children }) => {
                 });
                 setErrors({}); // Clear any old errors
                 toast.success('Registration successful!');
-                navigate('/admin');
+
+                if (response.data.user.role === 1) {
+                    navigate('/admin'); // Admin route
+                } else {
+                    navigate('/'); // Normal user route
+                }
             }
         } catch (error) {
             if (error.response?.status === 422) {
@@ -69,6 +74,11 @@ export const AuthProvider = ({ children }) => {
                 setForm({ email: '', password: '', message: '' });
                 toast.success('Login successful!');
                 navigate('/admin');
+                if (response.data.user.role === 1) {
+                    navigate('/admin'); // Admin route
+                } else {
+                    navigate('/'); // Normal user route
+                }
             }
         } catch (error) {
             if (error.response?.status === 422) {
@@ -85,7 +95,9 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = async () => {
+    const logout = async (options = {}) => {
+        const { redirectTo = '/auth/login' } = options; // Default to login page
+
         try {
             await api.post('/logout');
         } catch (error) {
@@ -95,10 +107,9 @@ export const AuthProvider = ({ children }) => {
             // Always clear client state regardless of API success
             localStorage.removeItem('auth_token');
             setUser(null);
-            navigate('/auth/login');
+            navigate(redirectTo); // Use the specified redirect
         }
     };
-
     const subscribe = async (formData, setFormData, setErrors) => {
         try {
             // Assuming form only contains { email: "user@example.com" }

@@ -40,7 +40,7 @@ export default function App() {
             </Route>
 
             <Route path='/admin' element={
-                <PrivateRoute>
+                <PrivateRoute role={1}>
                     <AdminLayouts />
                 </PrivateRoute>
             }>
