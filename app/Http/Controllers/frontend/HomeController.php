@@ -48,4 +48,27 @@ class HomeController extends Controller
             'data' => $post,
         ], 200);
     }
+
+    public function relatedPosts($slug)
+    {
+        $currentPost = Post::with('categories')->where('slug', $slug)->firstOrFail();
+
+        // Get IDs of current post's categories
+        $categoryIds = $currentPost->categories->pluck('id');
+
+        // Get related posts with at least one matching category
+        $relatedPosts = Post::with(['categories', 'user'])
+            ->where('posts.id', '!=', $currentPost->id) // Explicitly specify table
+            ->whereHas('categories', function($query) use ($categoryIds) {
+                $query->whereIn('categories.id', $categoryIds); // Explicitly specify table
+            })
+            ->orderBy('posts.created_at', 'desc') // Explicitly specify table
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $relatedPosts
+        ]);
+    }
 }

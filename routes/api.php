@@ -14,6 +14,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/category-list', [HomeController::class, 'categoryList']);
 Route::get('/post-list', [HomeController::class, 'postList']);
 Route::get('/posts/{slug}', [HomeController::class, 'showPostDetails']);
+Route::get('/posts/related/{slug}', [HomeController::class, 'relatedPosts']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
