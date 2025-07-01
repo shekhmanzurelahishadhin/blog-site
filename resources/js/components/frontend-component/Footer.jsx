@@ -1,25 +1,47 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faEnvelope, 
-  faPhone, 
+import {
+  faEnvelope,
+  faPhone,
   faMapMarkerAlt,
   faClock
 } from '@fortawesome/free-solid-svg-icons';
-import { 
-  faFacebook, 
-  faTwitter, 
-  faInstagram, 
+import {
+  faFacebook,
+  faTwitter,
+  faInstagram,
   faLinkedin,
   faYoutube
 } from '@fortawesome/free-brands-svg-icons';
+import api from "../../api/axios";
+import {toast} from "react-toastify";
+import {Link} from "react-router-dom";
 
 const Footer = () => {
+    const [categories, setCategories] = useState([]);
+    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    // Fetch categories from Laravel API
+    const fetchCategories = async () => {
+        setCategoriesLoading(true);
+        try {
+            const res = await api.get('/category-list?limit=5&sort=desc');
+            setCategories(res.data.data);
+        } catch (error) {
+            toast.error('Failed to fetch categories');
+            localStorage.removeItem('auth_token');
+        } finally {
+            setCategoriesLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCategories();
+    }, []);
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-          
+
           {/* About Section */}
           <div>
             <h3 className="text-white text-xl font-bold mb-6">MindfulBytes</h3>
@@ -62,12 +84,13 @@ const Footer = () => {
           <div>
             <h4 className="text-white text-lg font-semibold mb-6">Categories</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="hover:text-white transition-colors">Technology</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Psychology</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Productivity</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Creativity</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Business</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Health & Wellness</a></li>
+                {
+                    categories.map((category)=>
+                        (
+                            <li><Link to={`/posts?category=${encodeURIComponent(category.name)}`} className="hover:text-white transition-colors">{category?.name}</Link></li>
+                        )
+                    )
+                }
             </ul>
           </div>
 
@@ -97,14 +120,14 @@ const Footer = () => {
             <div className="mt-8">
               <h5 className="text-white font-medium mb-3">Subscribe to Newsletter</h5>
               <form className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your email" 
+                <input
+                  type="email"
+                  placeholder="Your email"
                   className="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
                   required
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-md transition-colors"
                 >
                   Subscribe

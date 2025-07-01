@@ -9,9 +9,20 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function categoryList()
+    public function categoryList(Request $request)
     {
-        $categories = Category::withCount('posts')->latest()->get();
+        $limit = $request->query('limit'); // may be null
+        $sort = $request->query('sort', 'desc'); // default desc if not sent
+
+
+        $query = Category::withCount('posts')->latest()
+            ->orderBy('created_at', $sort);
+
+        if ($limit) {
+            $query->take($limit);
+        }
+
+        $categories = $query->get();
         return response()->json([
             'message' => 'Category list fetched.',
             'data' => $categories,
