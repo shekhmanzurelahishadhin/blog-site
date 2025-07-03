@@ -12,7 +12,7 @@ const PostCard = ({ post }) => {
 
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-md card-hover transition-slow">
-      <img src={post.image?.startsWith('http') ? post.image : `/storage/${post.image}`} alt="Post thumbnail" className="w-full h-48 object-cover" />
+      <img src={`${import.meta.env.VITE_BACKEND_URL}/storage/${post.image}`} alt="Post thumbnail" className="w-full h-48 object-cover" />
       <div className="p-6">
         <div className="flex flex-wrap gap-2 mb-2">
           {post.categories?.map((category) => (
