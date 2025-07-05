@@ -229,7 +229,7 @@ const PostDetailsPage = () => {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
             {/* Main Content */}
             <div className="flex-1">
                 {/* Back Button */}
@@ -560,11 +560,11 @@ const PostDetailsPage = () => {
                                 to={`/posts/${post.slug}`}
                                 className="block hover:bg-gray-50 p-2 rounded transition-colors"
                             >
-                                <h4 className="font-medium text-gray-900 line-clamp-2">{post.title}</h4>
+                                <h4 className="font-medium text-indigo-600 line-clamp-2">{post.title}</h4>
                                 <div className="flex items-center text-xs text-gray-500 mt-1">
                                     <span>{new Date(post.published_at).toLocaleDateString()}</span>
-                                    <span className="mx-2">•</span>
-                                    <span>{post.read_time || '5 min'} read</span>
+                                    {/*<span className="mx-2">•</span>*/}
+                                    {/*<span>{post?.published_at}</span>*/}
                                 </div>
                             </Link>
                         ))}
