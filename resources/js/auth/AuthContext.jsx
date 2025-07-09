@@ -27,34 +27,34 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-   const register = async (form, setForm, setErrors, setLoading) => {
-    setLoading(true);
-    try {
-        const response = await api.post('/register', form);
+    const register = async (form, setForm, setErrors, setLoading) => {
+        setLoading(true);
+        try {
+            const response = await api.post('/register', form);
 
-        if (response.data.token) {
-            setUser(response.data.user);
-            localStorage.setItem('auth_token', response.data.token);
-            setForm({
-                name: '',
-                email: '',
-                password: '',
-                password_confirmation: '',
-            });
-            setErrors({}); // Clear any old errors
-            toast.success('Registration successful!');
-            navigate('/admin');
+            if (response.data.token) {
+                setUser(response.data.user);
+                localStorage.setItem('auth_token', response.data.token);
+                setForm({
+                    name: '',
+                    email: '',
+                    password: '',
+                    password_confirmation: '',
+                });
+                setErrors({}); // Clear any old errors
+                toast.success('Registration successful!');
+                navigate('/admin');
+            }
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors || {}); // ✅ Extract only the 'errors' part
+            } else {
+                toast.error(error.response?.data?.message || 'Registration failed!');
+            }
+        } finally {
+            setLoading(false);
         }
-    } catch (error) {
-        if (error.response?.status === 422) {
-            setErrors(error.response.data.errors || {}); // ✅ Extract only the 'errors' part
-        } else {
-            toast.error(error.response?.data?.message || 'Registration failed!');
-        }
-    } finally {
-        setLoading(false);
-    }
-};
+    };
 
 
 
@@ -98,8 +98,23 @@ export const AuthProvider = ({ children }) => {
             navigate('/auth/login');
         }
     };
+    const setToken = async (token) => {
+        localStorage.setItem('auth_token', token);
+
+        try {
+            // Fetch the authenticated user info from backend
+            const response = await api.get('/user');
+            setUser(response.data);
+            setAuthLoading(false)
+        } catch (error) {
+            // If token is invalid or fetch fails, clear user state
+            localStorage.removeItem('auth_token');
+            setUser(null);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading }}>
+        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading, setToken }}>
             {authLoading ? <Preloader /> : children}
         </AuthContext.Provider>
     )

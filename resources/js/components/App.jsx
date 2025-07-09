@@ -14,17 +14,18 @@ import HomePage from './pages/frontend/HomePage';
 import AllPostsPage from './pages/frontend/AllPostsPage';
 import PostDetailPage from './pages/frontend/PostDetailPage';
 import PublicLayouts from './layouts/PublicLayouts';
+import SocialCallback from './pages/auth/SocialCallback';
 
 
 
 export default function App() {
     return (
         <Routes>
-             {/* Public Routes */}
+            {/* Public Routes */}
             <Route path='/' element={<PublicLayouts />}>
                 <Route index element={<HomePage />} />
                 <Route path='posts' element={<AllPostsPage />} />
-                <Route path='posts/:slug' element={<PostDetailPage/>} />
+                <Route path='posts/:slug' element={<PostDetailPage />} />
                 <Route path='categories/:slug' element={<AllPostsPage />} />
             </Route>
             <Route path='/auth' element={
@@ -46,7 +47,7 @@ export default function App() {
                 <Route path='posts' element={<PostList />} />
                 <Route path="posts/:slug" element={<PostDetails />} />
             </Route>
-
+            <Route path="/auth/social-callback" element={<SocialCallback />} />
         </Routes>
     );
 }

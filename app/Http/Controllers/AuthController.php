@@ -6,6 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+
 
 class AuthController extends Controller
 {
@@ -61,5 +65,34 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully.'
         ], 200);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            $user = User::firstOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
+                    'name' => $googleUser->getName(),
+                    'password' => bcrypt(Str::random(24)),
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            Auth::login($user);
+
+            // Redirect back to frontend with token
+            return redirect(env('FRONTEND_URL') . '/auth/social-callback?token=' . $user->createToken('authToken')->plainTextToken);
+
+        } catch (\Exception $e) {
+            return redirect(env('FRONTEND_URL') . '/login?error=google_login_failed');
+        }
     }
 }

@@ -123,12 +123,14 @@ export default function Login() {
             <div className="grid grid-cols-2 gap-3">
                 <button
                     type="button"
+                    onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`}
+
                     className="flex items-center justify-center py-2.5 px-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
                 >
-                    <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-1.998v-2.861c0-1.881-2.002-1.722-2.002 0v2.861h-2v-6h2v1.093c.872-1.616 4-1.736 4 1.548v3.359z"/>
+                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.784-1.672-4.166-2.698-6.735-2.698-5.522 0-10 4.477-10 10s4.478 10 10 10c8.396 0 10-7.496 10-10 0-0.67-0.069-1.325-0.189-1.971h-9.811z"/>
                     </svg>
-                    <span className="text-sm">LinkedIn</span>
+                    <span className="text-sm">Google</span>
                 </button>
                 <button
                     type="button"
