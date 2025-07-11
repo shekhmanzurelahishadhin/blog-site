@@ -95,4 +95,34 @@ class AuthController extends Controller
             return redirect(env('FRONTEND_URL') . '/login?error=google_login_failed');
         }
     }
+
+    public function redirectToGithub()
+    {
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function handleGithubCallback()
+    {
+
+        try {
+            $githubUser = Socialite::driver('github')->user();
+            $user = User::firstOrCreate(
+                ['email' => $githubUser->getEmail()],
+                [
+                    'name' => $githubUser->getName() ?? $githubUser->getEmail(),
+                    'password' => bcrypt(Str::random(24)),
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            Auth::login($user);
+
+            // Redirect back to frontend with token
+            return redirect(env('FRONTEND_URL') . '/auth/social-callback?token=' . $user->createToken('authToken')->plainTextToken);
+
+        } catch (\Exception $e) {
+            dd($e);
+            return redirect(env('FRONTEND_URL') . '/login?error=github_login_failed');
+        }
+    }
 }
