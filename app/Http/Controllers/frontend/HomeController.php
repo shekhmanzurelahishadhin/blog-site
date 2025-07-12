@@ -4,8 +4,10 @@ namespace App\Http\Controllers\frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\ContactMessage;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Validator;
 
 class HomeController extends Controller
 {
@@ -81,6 +83,32 @@ class HomeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $relatedPosts
+        ]);
+    }
+
+    public function sendMessage(Request $request)
+    {
+        // Validate input fields
+        $validator = Validator::make($request->all(), [
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        ContactMessage::create($request->all());
+
+        // Return success response
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Message sent successfully!',
         ]);
     }
 }
