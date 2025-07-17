@@ -4,7 +4,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom';
 import {
   FiMenu, FiX, FiChevronDown, FiChevronRight, FiArrowRight,
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingBag,
-  FiFileText, FiMail, FiLock, FiLogOut, FiUser, FiKey, FiHelpCircle, FiPackage
+  FiFileText, FiMail, FiLock, FiLogOut, FiUser, FiKey, FiHelpCircle, FiPackage, FiMessageSquare
 } from 'react-icons/fi';
 import '../styles/custome.css';
 import useAuth from '../../auth/useAuth';
@@ -85,6 +85,11 @@ export default function AdminLayout() {
       name: 'Posts',
       icon: <FiFileText className="text-lg" />,
       path: '/admin/posts'
+    },
+    {
+      name: 'Contact Message',
+      icon: <FiMessageSquare className="text-lg" />,
+      path: '/admin/contact-message'
     },
     {
       name: 'Users',

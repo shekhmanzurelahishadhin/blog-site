@@ -15,6 +15,7 @@ import AllPostsPage from './pages/frontend/AllPostsPage';
 import PostDetailPage from './pages/frontend/PostDetailPage';
 import PublicLayouts from './layouts/PublicLayouts';
 import SocialCallback from './pages/auth/SocialCallback';
+import ContactList from "./pages/contact-message/ContactList";
 
 
 
@@ -46,6 +47,7 @@ export default function App() {
                 <Route path='categories' element={<CategoryList />} />
                 <Route path='posts' element={<PostList />} />
                 <Route path="posts/:slug" element={<PostDetails />} />
+                <Route path='contact-message' element={<ContactList />} />
             </Route>
             <Route path="/auth/social-callback" element={<SocialCallback />} />
         </Routes>
