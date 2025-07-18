@@ -16,13 +16,18 @@ import {
 import api from "../../api/axios";
 import {toast} from "react-toastify";
 import {Link} from "react-router-dom";
+import useAuth from "../../auth/useAuth";
 
 const Footer = () => {
     const [categories, setCategories] = useState([]);
-    const [categoriesLoading, setCategoriesLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        email: ''
+    });
+    const [errors, setErrors] = useState({});
+    const{ subscribe } = useAuth();
     // Fetch categories from Laravel API
     const fetchCategories = async () => {
-        setCategoriesLoading(true);
+
         try {
             const res = await api.get('/category-list?limit=5&sort=desc');
             setCategories(res.data.data);
@@ -30,13 +35,32 @@ const Footer = () => {
             toast.error('Failed to fetch categories');
             localStorage.removeItem('auth_token');
         } finally {
-            setCategoriesLoading(false);
+
         }
     };
 
     useEffect(() => {
         fetchCategories();
     }, []);
+
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            [name]: value
+        });
+        // Clear error when user types
+        if (errors[name]) {
+            setErrors({
+                [name]: null
+            });
+        }
+    };
+
+    const submitSubscribeForm = async (e) => {
+        e.preventDefault();
+        await subscribe(formData, setFormData, setErrors);
+    }
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,7 +68,7 @@ const Footer = () => {
 
           {/* About Section */}
           <div>
-            <h3 className="text-white text-xl font-bold mb-6">MindfulBytes</h3>
+            <h3 className="text-white text-xl font-bold mb-6">ShadhinVerse</h3>
             <p className="mb-4">
               Thoughtful content for curious minds. Explore, learn, and grow with our community of lifelong learners.
             </p>
@@ -87,7 +111,7 @@ const Footer = () => {
                 {
                     categories.map((category)=>
                         (
-                            <li><Link to={`/posts?category=${encodeURIComponent(category.name)}`} className="hover:text-white transition-colors">{category?.name}</Link></li>
+                            <li key={category?.id}><Link to={`/posts?category=${encodeURIComponent(category.name)}`} className="hover:text-white transition-colors">{category?.name}</Link></li>
                         )
                     )
                 }
@@ -100,29 +124,37 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 mr-3 text-indigo-400" />
-                <span>123 Knowledge Street, Learning City, Ed 45678</span>
+                <span>46-B-1, North Maniknagar, Dhaka-1203</span>
               </li>
               <li className="flex items-center">
                 <FontAwesomeIcon icon={faEnvelope} className="mr-3 text-indigo-400" />
-                <a href="mailto:info@mindfulbytes.com" className="hover:text-white">info@mindfulbytes.com</a>
+                <a href="mailto:shadhinmonzur18@gmail.com" className="hover:text-white">shadhinmonzur18@gmail.com</a>
               </li>
               <li className="flex items-center">
                 <FontAwesomeIcon icon={faPhone} className="mr-3 text-indigo-400" />
-                <a href="tel:+11234567890" className="hover:text-white">+1 (123) 456-7890</a>
+                <a href="tel:+8801973829988" className="hover:text-white">+8801973829988</a>
               </li>
               <li className="flex items-start">
                 <FontAwesomeIcon icon={faClock} className="mt-1 mr-3 text-indigo-400" />
-                <span>Mon-Fri: 9AM - 5PM<br/>Sat-Sun: Closed</span>
+                <span>Sun-Thu: 9AM - 5PM<br/>Fri-Sat: Closed</span>
               </li>
             </ul>
 
             {/* Newsletter Subscription */}
             <div className="mt-8">
               <h5 className="text-white font-medium mb-3">Subscribe to Newsletter</h5>
-              <form className="flex">
+              <form onSubmit={submitSubscribeForm} className="flex">
                 <input
                   type="email"
+                  value={formData.email}
                   placeholder="Your email"
+                  onChange={(e) => {
+                      handleInputChange(e);
+                      // Auto-generate slug when name changes (only for new categories)
+                      setFormData({
+                          email: e.target.value
+                      });
+                  }}
                   className="px-4 py-2 w-full rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900"
                   required
                 />
@@ -139,7 +171,7 @@ const Footer = () => {
 
         {/* Copyright Section */}
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-          <p>© {new Date().getFullYear()} MindfulBytes. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} ShadhinVerse. All rights reserved.</p>
           <div className="flex justify-center space-x-6 mt-4">
             <a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a>
             <a href="#" className="text-gray-400 hover:text-white">Terms of Service</a>

@@ -17,6 +17,7 @@ Route::get('/post-list', [HomeController::class, 'postList']);
 Route::get('/posts/{slug}', [HomeController::class, 'showPostDetails']);
 Route::get('/posts/related/{slug}', [HomeController::class, 'relatedPosts']);
 Route::post('/send-message', [HomeController::class, 'sendMessage']);
+Route::post('/subscribe', [HomeController::class,'subscribe']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
     Route::get('/posts/slug/{slug}', [PostController::class, 'showBySlug']);
     Route::apiResource('contact-messages', ContactMessageController::class);
+
 });
 
 

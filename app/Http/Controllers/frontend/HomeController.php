@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\ContactMessage;
 use App\Models\Post;
+use App\Models\Subscribe;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -109,6 +110,28 @@ class HomeController extends Controller
         return response()->json([
             'status'  => 'success',
             'message' => 'Message sent successfully!',
+        ]);
+    }
+
+    public function subscribe(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email'   => 'required|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        Subscribe::create($request->all());
+
+        // Return success response
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Subscribed successfully!',
         ]);
     }
 }

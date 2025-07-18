@@ -98,6 +98,31 @@ export const AuthProvider = ({ children }) => {
             navigate('/auth/login');
         }
     };
+
+    const subscribe = async (formData, setFormData, setErrors) => {
+        try {
+            // Assuming form only contains { email: "user@example.com" }
+            const response = await api.post('/subscribe', formData);
+
+            // For a subscription, just check success status or message
+            if (response.status === 200 || response.data.success) {
+                setFormData({ email: '' });  // Clear email input
+                setErrors({});           // Clear previous errors
+                toast.success('Subscribed successfully!');
+            } else {
+                toast.error('Subscription failed. Please try again.');
+            }
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                toast.error(error.response?.data?.message || 'Subscription failed. Please try again.');
+            }
+        } finally {
+        }
+    };
+
+
     const setToken = async (token) => {
         localStorage.setItem('auth_token', token);
 
@@ -114,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading, setToken }}>
+        <AuthContext.Provider value={{ user, setUser, register, logout, login, authLoading, setToken, subscribe }}>
             {authLoading ? <Preloader /> : children}
         </AuthContext.Provider>
     )

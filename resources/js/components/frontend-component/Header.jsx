@@ -25,7 +25,7 @@ const Header = () => {
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <NavLink to="/" className="text-xl font-bold gradient-text">
-            Mindful<span className="text-indigo-600">Bytes</span>
+              Shadhin<span className="text-indigo-600">Verse</span>
           </NavLink>
 
           {/* Desktop Menu */}
