@@ -5,21 +5,21 @@ import api from '../../../api/axios';
 import Swal from 'sweetalert2';
 import DataTable from 'react-data-table-component';
 
-export default function ContactList() {
-    const [messages, setMessages] = useState([]);
+export default function SubscriberList() {
+    const [subscribers, setSubscribers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredMessages, setFilteredMessages] = useState([]);
+    const [filteredSubscribers, setFilteredSubscribers] = useState([]);
 
-    // Fetch contact messages
+    // Fetch contact subscribers
     const fetchMessages = async () => {
         try {
             setIsLoading(true);
-            const res = await api.get('/contact-messages');
-            setMessages(res.data.data);
-            setFilteredMessages(res.data.data);
+            const res = await api.get('/subscriber-list');
+            setSubscribers(res.data.data);
+            setFilteredSubscribers(res.data.data);
         } catch (error) {
-            toast.error('Failed to fetch messages');
+            toast.error('Failed to subscriber');
             localStorage.removeItem('auth_token');
         } finally {
             setIsLoading(false);
@@ -32,17 +32,14 @@ export default function ContactList() {
 
     useEffect(() => {
         if (!searchTerm) {
-            setFilteredMessages(messages);
+            setFilteredSubscribers(subscribers);
         } else {
-            const filtered = messages.filter(msg =>
-                msg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                msg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                msg.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                msg.message.toLowerCase().includes(searchTerm.toLowerCase())
+            const filtered = subscribers.filter(msg =>
+                msg.email.toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setFilteredMessages(filtered);
+            setFilteredSubscribers(filtered);
         }
-    }, [searchTerm, messages]);
+    }, [searchTerm, subscribers]);
 
     // Delete message
     const handleDelete = async (id) => {
@@ -58,9 +55,9 @@ export default function ContactList() {
 
         if (result.isConfirmed) {
             try {
-                await api.delete(`/contact-messages/${id}`);
+                await api.delete(`/destroy-subscriber/${id}`);
                 toast.success('Message deleted successfully');
-                setMessages(prev => prev.filter(msg => msg.id !== id));
+                setSubscribers(prev => prev.filter(msg => msg.id !== id));
             } catch (error) {
                 toast.error(error.response?.data?.message || 'Failed to delete message');
             }
@@ -75,30 +72,10 @@ export default function ContactList() {
             grow: 0,
         },
         {
-            name: 'Name',
-            selector: row => row.name,
-            sortable: true,
-            width: '10%',
-        },
-        {
             name: 'Email',
             selector: row => row.email,
             sortable: true,
-            width: '25%',
-        },
-        {
-            name: 'Subject',
-            selector: row => row.subject,
-            sortable: true,
-            width: '25%',
-        },
-        {
-            name: 'Message',
-            selector: row => row.message,
-            sortable: false,
-            wrap: true,
-            width: '25%',
-            grow: 2,
+            width: '85%',
         },
         {
             name: 'Actions',
@@ -120,10 +97,10 @@ export default function ContactList() {
         <div className="container mx-auto py-8">
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b">
-                    <h2 className="text-xl font-semibold text-gray-800">Contact Messages</h2>
+                    <h2 className="text-xl font-semibold text-gray-800">Subscriber List</h2>
                     <input
                         type="text"
-                        placeholder="Search messages..."
+                        placeholder="Search subscribers..."
                         className="mt-2 sm:mt-0 px-2 py-2 border rounded-md"
                         onChange={e => setSearchTerm(e.target.value)}
                     />
@@ -132,7 +109,7 @@ export default function ContactList() {
                 <div className="overflow-x-auto">
                     <DataTable
                         columns={columns}
-                        data={filteredMessages}
+                        data={filteredSubscribers}
                         pagination
                         highlightOnHover
                         pointerOnHover

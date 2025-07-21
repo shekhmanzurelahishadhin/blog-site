@@ -28,7 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
     Route::get('/posts/slug/{slug}', [PostController::class, 'showBySlug']);
     Route::apiResource('contact-messages', ContactMessageController::class);
-
+    Route::get('subscriber-list', [ContactMessageController::class, 'subscriberList']);
+    Route::delete('destroy-subscriber/{subscribe}', [ContactMessageController::class, 'subscriberDestroy']);
 });
 
 

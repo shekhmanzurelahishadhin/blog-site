@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
+use App\Models\Subscribe;
 use Illuminate\Http\Request;
 
 class ContactMessageController extends Controller
@@ -20,6 +21,24 @@ class ContactMessageController extends Controller
 
         return response()->json([
             'message' => 'Message deleted successfully.'
+        ], 200);
+    }
+
+    public function subscriberList()
+    {
+        $subscribes = Subscribe::latest()->get();
+        return response()->json([
+            'message' => 'Subscribe list fetched.',
+            'data' => $subscribes,
+        ], 200);
+    }
+
+    public function subscriberDestroy(Subscribe $subscribe)
+    {
+        $subscribe->delete();
+
+        return response()->json([
+            'message' => 'Subscriber deleted successfully.'
         ], 200);
     }
 }

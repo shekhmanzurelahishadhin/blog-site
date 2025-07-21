@@ -87,9 +87,14 @@ export default function AdminLayout() {
       path: '/admin/posts'
     },
     {
-      name: 'Contact Message',
+      name: 'Message List',
       icon: <FiMessageSquare className="text-lg" />,
-      path: '/admin/contact-message'
+      path: '/admin/message-list'
+    },
+    {
+      name: 'Subscriber List',
+      icon: <FiUser className="text-lg" />,
+      path: '/admin/subscriber-list'
     },
     {
       name: 'Users',
