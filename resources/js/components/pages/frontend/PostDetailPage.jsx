@@ -16,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import api from '../../../api/axios';
 import Preloader from '../../ui/Preloader';
+import useAuth from "../../../auth/useAuth";
 
 const PostDetailsPage = () => {
     const { slug } = useParams();
@@ -26,6 +27,11 @@ const PostDetailsPage = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [formData, setFormData] = useState({
+        email: ''
+    });
+    const [errors, setErrors] = useState({});
+    const{ subscribe } = useAuth();
 
     // Comment-related state
     const [comments, setComments] = useState([
@@ -214,6 +220,25 @@ const PostDetailsPage = () => {
             alert('Link copied to clipboard!');
         });
     };
+
+    // Handle form input changes
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({
+            [name]: value
+        });
+        // Clear error when user types
+        if (errors[name]) {
+            setErrors({
+                [name]: null
+            });
+        }
+    };
+
+    const submitSubscribeForm = async (e) => {
+        e.preventDefault();
+        await subscribe(formData, setFormData, setErrors);
+    }
 
     if (loading) {
         return (
@@ -575,9 +600,17 @@ const PostDetailsPage = () => {
                 <div className="bg-indigo-50 p-6 rounded-lg">
                     <h3 className="font-bold text-lg mb-2">Stay Updated</h3>
                     <p className="text-sm text-gray-600 mb-4">Subscribe to our newsletter for the latest posts</p>
-                    <form className="space-y-3">
+                    <form  onSubmit={submitSubscribeForm} className="space-y-3">
                         <input
                             type="email"
+                            value={formData.email}
+                            onChange={(e) => {
+                                handleInputChange(e);
+                                // Auto-generate slug when name changes (only for new categories)
+                                setFormData({
+                                    email: e.target.value
+                                });
+                            }}
                             placeholder="Your email address"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-transparent text-sm"
                         />
