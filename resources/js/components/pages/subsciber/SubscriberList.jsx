@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import api from '../../../api/axios';
 import Swal from 'sweetalert2';
 import DataTable from 'react-data-table-component';
+import ExportButtons from "../../ui/ExportButtons";
 
 export default function SubscriberList() {
     const [subscribers, setSubscribers] = useState([]);
@@ -98,12 +99,7 @@ export default function SubscriberList() {
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">Subscriber List</h2>
-                    <input
-                        type="text"
-                        placeholder="Search subscribers..."
-                        className="mt-2 sm:mt-0 px-2 py-2 border rounded-md"
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
+
                 </div>
 
                 <div className="overflow-x-auto">
@@ -116,7 +112,24 @@ export default function SubscriberList() {
                         progressPending={isLoading}
                         paginationPerPage={10}
                         paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
-                        noHeader
+                        subHeader
+                        subHeaderComponent={
+                            <div className="flex justify-between items-center w-full">
+                                <ExportButtons
+                                    data={filteredSubscribers}
+                                    fileName="subscriber"
+                                    columns={[
+                                        {name: 'email', selector: 'email'},
+                                    ]}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Search subscribers..."
+                                    className="mt-2 sm:mt-0 px-2 py-2 border rounded-md"
+                                    onChange={e => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        }
                     />
                 </div>
             </div>

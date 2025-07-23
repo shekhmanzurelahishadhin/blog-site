@@ -17,6 +17,7 @@ import {
 import api from '../../../api/axios';
 import Preloader from '../../ui/Preloader';
 import useAuth from "../../../auth/useAuth";
+import {toast} from "react-toastify";
 
 const PostDetailsPage = () => {
     const { slug } = useParams();
@@ -31,7 +32,7 @@ const PostDetailsPage = () => {
         email: ''
     });
     const [errors, setErrors] = useState({});
-    const{ subscribe } = useAuth();
+    const{ subscribe, user } = useAuth();
 
     // Comment-related state
     const [comments, setComments] = useState([
@@ -124,7 +125,10 @@ const PostDetailsPage = () => {
     // Comment handlers
     const handleCommentSubmit = () => {
         if (!newComment.trim()) return;
-
+        if (user == null) {
+            toast.warning('Please login to comment');
+            return;
+        }
         const newCommentObj = {
             id: Date.now(),
             author: currentUser,
@@ -142,7 +146,10 @@ const PostDetailsPage = () => {
 
     const handleReplySubmit = (commentId) => {
         if (!replyText.trim()) return;
-
+        if (user == null) {
+            toast.warning('Please login to reply');
+            return;
+        }
         const updatedComments = comments.map(comment => {
             if (comment.id === commentId) {
                 const newReply = {

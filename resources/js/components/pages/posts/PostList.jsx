@@ -337,6 +337,12 @@ export default function PostList() {
       width: '25%',
     },
     {
+      name: 'Views',
+      selector: row => row.views,
+      sortable: true,
+      width: '10%',
+    },
+    {
       name: 'Status',
       cell: row => (
         <span className={`px-2 py-1 text-xs rounded-full ${row.active == 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -349,7 +355,7 @@ export default function PostList() {
     {
       name: 'Published At',
       cell: row => row.published_at ? moment(row.published_at).format('MMM D, YYYY') : 'Draft',
-      width: '15%',
+      width: '10%',
     },
     {
       name: 'Actions',
@@ -369,7 +375,7 @@ export default function PostList() {
           </button>
         </div>
       ),
-      width: '15%',
+      width: '10%',
       ignoreRowClick: true,
     }
   ];
@@ -405,17 +411,24 @@ export default function PostList() {
             defaultSortAsc={false}
             subHeaderComponent={
               <div className="flex justify-between items-center w-full">
-                <ExportButtons
-                  data={postsSearch}
-                  fileName="posts"
-                  columns={[
-                    { name: 'Title', selector: 'title' },
-                    { name: 'Slug', selector: 'slug' },
-                    { name: 'Category', selector: row => row.category?.name || 'N/A' },
-                    { name: 'Status', selector: row => row.active ? 'Active' : 'Inactive' },
-                    { name: 'Published At', selector: row => row.published_at || 'Draft' }
-                  ]}
-                />
+                  <ExportButtons
+                      data={postsSearch}
+                      fileName="posts"
+                      columns={[
+                          {name: 'Title', selector: 'title'},
+                          {name: 'Slug', selector: 'slug'},
+                          {name: 'Views', selector: 'views'},
+                          {
+                              name: 'Category',
+                              selector: row =>
+                                  Array.isArray(row.categories) && row.categories.length > 0
+                                      ? row.categories.map(cat => cat.name).join(', ')
+                                      : 'N/A'
+                          },
+                          {name: 'Status', selector: row => row.active ? 'Active' : 'Inactive'},
+                          {name: 'Published At', selector: row => row.published_at || 'Draft'}
+                      ]}
+                  />
                 <input
                   type="text"
                   placeholder="Search posts..."

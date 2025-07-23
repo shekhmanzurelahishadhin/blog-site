@@ -6,14 +6,26 @@ import autoTable from 'jspdf-autotable';
 const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
   // Helper function to safely get nested values
   const getNestedValue = (obj, selector) => {
-    if (!selector || typeof selector !== 'string') return '';
-    
-    return selector.split('.').reduce((result, key) => {
-      if (result && typeof result === 'object' && key in result) {
-        return result[key];
+      if (!selector) return '';
+
+      if (typeof selector === 'function') {
+          try {
+              return selector(obj);
+          } catch {
+              return '';
+          }
       }
+
+      if (typeof selector === 'string') {
+          return selector.split('.').reduce((result, key) => {
+              if (result && typeof result === 'object' && key in result) {
+                  return result[key];
+              }
+              return '';
+          }, obj);
+      }
+
       return '';
-    }, obj);
   };
 
   // Export to CSV
@@ -24,7 +36,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
       }
 
       const headers = columns.map(col => col.name || '');
-      const csvData = data.map(item => 
+      const csvData = data.map(item =>
         columns.map(col => {
           const value = col.selector ? getNestedValue(item, col.selector) : '';
           // Handle different value types
@@ -60,7 +72,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
         const row = {};
         columns.forEach(col => {
           const value = col.selector ? getNestedValue(item, col.selector) : '';
-          row[col.name || ''] = value !== null && value !== undefined 
+          row[col.name || ''] = value !== null && value !== undefined
             ? (typeof value === 'object' ? JSON.stringify(value) : value)
             : '';
         });
@@ -86,9 +98,9 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
 
       const doc = new jsPDF();
       doc.text(`${fileName} List`, 14, 16);
-      
+
       const headers = columns.map(col => col.name || '');
-      const pdfData = data.map(item => 
+      const pdfData = data.map(item =>
         columns.map(col => {
           const value = col.selector ? getNestedValue(item, col.selector) : '';
           if (value === null || value === undefined) return '';
@@ -96,7 +108,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
           return String(value);
         })
       );
-      
+
       autoTable(doc, {
         head: [headers],
         body: pdfData,
@@ -113,7 +125,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
           fontStyle: 'bold'
         }
       });
-      
+
       doc.save(`${fileName}.pdf`);
     } catch (error) {
       console.error('PDF Export Error:', error);
@@ -133,7 +145,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
           Excel
         </span>
       </button>
-      
+
       <button
         onClick={exportToCSV}
         className="flex items-center justify-center p-2 text-gray-600 bg-gray-50 rounded-full hover:bg-blue-50 transition-colors duration-200 group relative"
@@ -144,7 +156,7 @@ const ExportButtons = ({ data = [], fileName = 'data', columns = [] }) => {
           CSV
         </span>
       </button>
-      
+
       <button
         onClick={exportToPDF}
         className="flex items-center justify-center p-2 text-gray-600 bg-gray-50 rounded-full hover:bg-red-50 transition-colors duration-200 group relative"
