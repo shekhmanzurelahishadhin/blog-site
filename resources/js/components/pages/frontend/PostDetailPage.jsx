@@ -28,6 +28,7 @@ const PostDetailsPage = () => {
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [activeMenuId, setActiveMenuId] = useState(null);
     const [formData, setFormData] = useState({
         email: ''
     });
@@ -36,46 +37,39 @@ const PostDetailsPage = () => {
 
     // Comment-related state
     const [comments, setComments] = useState([
-        {
-            id: 1,
-            author: { name: 'John Doe', initials: 'JD', avatar: null },
-            text: 'This article really helped me understand the topic better!',
-            date: '2023-06-15T10:30:00Z',
-            likes: 5,
-            liked: false,
-            replies: [
-                {
-                    id: 2,
-                    author: { name: 'Jane Smith', initials: 'JS', avatar: null },
-                    text: 'I completely agree! The examples were particularly helpful.',
-                    date: '2023-06-15T14:45:00Z',
-                    likes: 2,
-                    liked: false
-                }
-            ]
-        },
-        {
-            id: 3,
-            author: { name: 'Alex Johnson', initials: 'AJ', avatar: null },
-            text: 'Does anyone have additional resources on this subject?',
-            date: '2023-06-16T09:15:00Z',
-            likes: 3,
-            liked: true,
-            replies: []
-        }
+        // {
+        //     id: 1,
+        //     author: { name: 'John Doe', initials: 'JD', avatar: null },
+        //     text: 'This article really helped me understand the topic better!',
+        //     date: '2023-06-15T10:30:00Z',
+        //     likes: 5,
+        //     liked: false,
+        //     replies: [
+        //         {
+        //             id: 2,
+        //             author: { name: 'Jane Smith', initials: 'JS', avatar: null },
+        //             text: 'I completely agree! The examples were particularly helpful.',
+        //             date: '2023-06-15T14:45:00Z',
+        //             likes: 2,
+        //             liked: false
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: 3,
+        //     author: { name: 'Alex Johnson', initials: 'AJ', avatar: null },
+        //     text: 'Does anyone have additional resources on this subject?',
+        //     date: '2023-06-16T09:15:00Z',
+        //     likes: 3,
+        //     liked: true,
+        //     replies: []
+        // }
     ]);
 
     const [newComment, setNewComment] = useState('');
     const [showCommentForm, setShowCommentForm] = useState(false);
     const [activeReplyId, setActiveReplyId] = useState(null);
     const [replyText, setReplyText] = useState('');
-
-    // Current user (replace with your auth system)
-    const currentUser = {
-        name: 'Current User',
-        initials: 'CU',
-        avatar: null
-    };
 
     // Fetch post data
     useEffect(() => {
@@ -108,6 +102,22 @@ const PostDetailsPage = () => {
         fetchRelatedPosts();
     }, [slug]);
 
+    // Fetch Comments after post is loaded
+    useEffect(() => {
+        if (!post?.id) return; // wait until post is fetched
+
+        const fetchComments = async () => {
+            try {
+                const res = await api.get(`/posts/${post.id}/comments`);
+                setComments(res.data.data); // Laravel API should return an array of comments
+            } catch (error) {
+                console.error('Failed to fetch comments', error);
+            }
+        };
+
+        fetchComments();
+    }, [post?.id]);
+
     // Fetch categories
     useEffect(() => {
         const fetchCategories = async () => {
@@ -123,26 +133,42 @@ const PostDetailsPage = () => {
     }, []);
 
     // Comment handlers
-    const handleCommentSubmit = () => {
+
+    const handleCommentSubmit = async () => {
         if (!newComment.trim()) return;
+
         if (user == null) {
             toast.warning('Please login to comment');
             return;
         }
-        const newCommentObj = {
-            id: Date.now(),
-            author: currentUser,
-            text: newComment,
-            date: new Date().toISOString(),
-            likes: 0,
-            liked: false,
-            replies: []
-        };
 
-        setComments([...comments, newCommentObj]);
-        setNewComment('');
-        setShowCommentForm(false);
+        try {
+            const response = await api.post('/comments', {
+                post_id: post?.id,
+                text: newComment.trim(),
+            });
+
+            if (response.data.status === 'success' || response.data.success) {
+                const savedComment = response.data.data; // your Laravel returns comment here
+
+                setComments(prev => [savedComment, ...prev]);
+                setNewComment('');
+                setShowCommentForm(false);
+                console.log(comments);
+                toast.success('Comment successfully!');
+            } else {
+                toast.error('Comment failed. Please try again.');
+            }
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                toast.error(error.response?.data?.message || 'Comment failed. Please try again.');
+            }
+        }
     };
+
+
 
     const handleReplySubmit = (commentId) => {
         if (!replyText.trim()) return;
@@ -246,6 +272,14 @@ const PostDetailsPage = () => {
         e.preventDefault();
         await subscribe(formData, setFormData, setErrors);
     }
+    const getInitials = (name) => {
+        if (!name) return '';
+        return name
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase();
+    };
 
     if (loading) {
         return (
@@ -395,7 +429,7 @@ const PostDetailsPage = () => {
                 <div className="mt-16">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl font-bold text-gray-900">
-                            Discussion ({comments.length})
+                            Discussion ({comments?.length})
                         </h2>
                         <button
                             onClick={() => setShowCommentForm(!showCommentForm)}
@@ -410,7 +444,7 @@ const PostDetailsPage = () => {
                         <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
                             <div className="flex items-start gap-3">
                                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
-                                    {currentUser.initials}
+                                    {getInitials(user?.name)}
                                 </div>
                                 <div className="flex-1">
                                     <textarea
@@ -436,19 +470,20 @@ const PostDetailsPage = () => {
 
                     {/* Comments List */}
                     <div className="space-y-4">
-                        {comments.length > 0 ? (
+                        {comments?.length > 0 ? (
+                            // <div>he</div>
                             comments.map((comment) => (
                                 <div key={comment.id} className="bg-white p-4 rounded-lg shadow-sm">
                                     <div className="flex items-start gap-3">
                                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
-                                            {comment.author.initials}
+                                            {getInitials(comment?.user?.name) || 'U'}
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h4 className="font-medium text-gray-900">{comment.author.name}</h4>
+                                                    <h4 className="font-medium text-gray-900">{comment?.user?.name}</h4>
                                                     <span className="text-xs text-gray-500">
-                                                        {new Date(comment.date).toLocaleDateString('en-US', {
+                                                        {new Date(comment.created_at).toLocaleDateString('en-US', {
                                                             year: 'numeric',
                                                             month: 'short',
                                                             day: 'numeric'
@@ -458,29 +493,49 @@ const PostDetailsPage = () => {
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => handleLikeComment(comment.id)}
-                                                        className={`flex items-center gap-1 ${comment.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                                                        className={`flex items-center gap-1 ${comment?.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                                                     >
                                                         <FontAwesomeIcon icon={faHeart} size="sm" />
-                                                        <span className="text-sm">{comment.likes}</span>
+                                                        <span className="text-sm">{comment?.likes}</span>
                                                     </button>
-                                                    <button className="text-gray-400 hover:text-gray-600">
-                                                        <FontAwesomeIcon icon={faEllipsisV} size="sm" />
-                                                    </button>
+                                                    {/* Show icon only if the logged-in user owns the comment */}
+                                                    {comment.user_id === user?.id && (
+                                                        <div className="relative">
+                                                            <button
+                                                                className="text-gray-400 hover:text-gray-600"
+                                                                onClick={() => setActiveMenuId(activeMenuId === comment.id ? null : comment.id)}
+                                                            >
+                                                                <FontAwesomeIcon icon={faEllipsisV} size="sm" />
+                                                            </button>
+
+                                                            {/* Dropdown Menu */}
+                                                            {activeMenuId === comment.id && (
+                                                                <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-10">
+                                                                    <button
+                                                                        className="block w-full text-left px-3 py-1 text-red-500 hover:bg-gray-100"
+                                                                        onClick={() => handleDeleteComment(comment.id)}
+                                                                    >
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <p className="mt-2 text-gray-700">{comment.text}</p>
+                                            <p className="mt-2 text-gray-700">{comment?.text}</p>
 
                                             {/* Reply Section */}
                                             <div className="mt-3">
                                                 <button
-                                                    onClick={() => setActiveReplyId(activeReplyId === comment.id ? null : comment.id)}
+                                                    onClick={() => setActiveReplyId(activeReplyId === comment?.id ? null : comment?.id)}
                                                     className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
                                                 >
                                                     <FontAwesomeIcon icon={faReply} size="sm" />
                                                     Reply
                                                 </button>
 
-                                                {activeReplyId === comment.id && (
+                                                {activeReplyId === comment?.id && (
                                                     <div className="mt-2 pl-3 border-l-2 border-gray-200">
                                                         <textarea
                                                             placeholder="Write your reply..."
@@ -514,27 +569,51 @@ const PostDetailsPage = () => {
                                                             <div key={reply.id} className="pt-3">
                                                                 <div className="flex items-start gap-2">
                                                                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-medium">
-                                                                        {reply.author.initials}
+                                                                        {getInitials(reply?.user?.name) || 'U'}
                                                                     </div>
                                                                     <div className="flex-1">
                                                                         <div className="flex items-center justify-between">
                                                                             <div>
-                                                                                <h4 className="text-sm font-medium text-gray-900">{reply.author.name}</h4>
+                                                                                <h4 className="text-sm font-medium text-gray-900">{reply?.user?.name}</h4>
                                                                                 <span className="text-xs text-gray-500">
-                                                                                    {new Date(reply.date).toLocaleDateString('en-US', {
+                                                                                    {new Date(reply?.created_at).toLocaleDateString('en-US', {
                                                                                         year: 'numeric',
                                                                                         month: 'short',
                                                                                         day: 'numeric'
                                                                                     })}
                                                                                 </span>
                                                                             </div>
-                                                                            <button
-                                                                                onClick={() => handleLikeReply(comment.id, reply.id)}
-                                                                                className={`flex items-center gap-1 ${reply.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
-                                                                            >
-                                                                                <FontAwesomeIcon icon={faHeart} size="xs" />
-                                                                                <span className="text-xs">{reply.likes}</span>
-                                                                            </button>
+                                                                            <div  className="flex items-center gap-2">
+                                                                                <button
+                                                                                    onClick={() => handleLikeReply(comment.id, reply.id)}
+                                                                                    className={`flex items-center gap-1 ${reply.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                                                                                >
+                                                                                    <FontAwesomeIcon icon={faHeart} size="xs" />
+                                                                                    <span className="text-xs">{reply.likes}</span>
+                                                                                </button>
+                                                                                {reply.user_id === user?.id && (
+                                                                                    <div className="relative">
+                                                                                        <button
+                                                                                            className="text-gray-400 hover:text-gray-600"
+                                                                                            onClick={() => setActiveMenuId(activeMenuId === reply.id ? null : reply.id)}
+                                                                                        >
+                                                                                            <FontAwesomeIcon icon={faEllipsisV} size="sm" />
+                                                                                        </button>
+
+                                                                                        {/* Dropdown Menu */}
+                                                                                        {activeMenuId === reply.id && (
+                                                                                            <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-10">
+                                                                                                <button
+                                                                                                    className="block w-full text-left px-3 py-1 text-red-500 hover:bg-gray-100"
+                                                                                                    onClick={() => handleDeleteReply(reply.id)}
+                                                                                                >
+                                                                                                    Delete
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                )}
+                                                                            </div>
                                                                         </div>
                                                                         <p className="mt-1 text-sm text-gray-700">{reply.text}</p>
                                                                     </div>
