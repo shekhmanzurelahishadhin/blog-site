@@ -154,8 +154,8 @@ const PostDetailsPage = () => {
                 setComments(prev => [savedComment, ...prev]);
                 setNewComment('');
                 setShowCommentForm(false);
-                console.log(comments);
-                toast.success('Comment successfully!');
+                // console.log(comments);
+                // toast.success('Comment successfully!');
             } else {
                 toast.error('Comment failed. Please try again.');
             }
@@ -170,35 +170,75 @@ const PostDetailsPage = () => {
 
 
 
-    const handleReplySubmit = (commentId) => {
+    const handleReplySubmit = async (commentId) => {
         if (!replyText.trim()) return;
         if (user == null) {
             toast.warning('Please login to reply');
             return;
         }
-        const updatedComments = comments.map(comment => {
-            if (comment.id === commentId) {
-                const newReply = {
-                    id: Date.now(),
-                    author: currentUser,
-                    text: replyText,
-                    date: new Date().toISOString(),
-                    likes: 0,
-                    liked: false
-                };
 
-                return {
-                    ...comment,
-                    replies: [...comment.replies, newReply]
-                };
+        try {
+            const response = await api.post(`/comments/${commentId}/reply`, {
+                text: replyText.trim(),
+            });
+
+
+            if (response.data.status === 'success' || response.data.success) {
+                const updatedComments = comments.map(comment => {
+
+                    if (comment?.id === commentId) {
+                        const newReply =  response.data.data;
+
+                        return {
+                            ...comment,
+                            replies: [...comment?.replies, newReply]
+                        };
+                    }
+                    return comment;
+                });
+
+                setComments(updatedComments);
+                setReplyText('');
+                setActiveReplyId(null);
+            } else {
+                toast.error('Reply failed. Please try again.');
             }
-            return comment;
-        });
-
-        setComments(updatedComments);
-        setReplyText('');
-        setActiveReplyId(null);
+        } catch (error) {
+            if (error.response?.status === 422) {
+                setErrors(error.response.data.errors || {});
+            } else {
+                toast.error(error.response?.data?.message || 'Reply failed. Please try again.');
+            }
+        }
     };
+
+    const handleDeleteComment = async (commentId, type, parentCommentId = null) => {
+        try {
+            await api.delete(`/comments/${commentId}`);
+
+            if (type === 'comment') {
+                // Remove a top-level comment
+                setComments(prev => prev.filter(comment => comment.id !== commentId));
+            } else if (type === 'reply') {
+                // Remove a reply inside a comment
+                setComments(prev =>
+                    prev.map(comment =>
+                        comment.id === parentCommentId
+                            ? {
+                                ...comment,
+                                replies: comment.replies.filter(reply => reply.id !== commentId)
+                            }
+                            : comment
+                    )
+                );
+            }
+
+            toast.success('Deleted successfully');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to delete comment');
+        }
+    };
+
 
     const handleLikeComment = (commentId) => {
         setComments(comments.map(comment => {
@@ -513,7 +553,7 @@ const PostDetailsPage = () => {
                                                                 <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-10">
                                                                     <button
                                                                         className="block w-full text-left px-3 py-1 text-red-500 hover:bg-gray-100"
-                                                                        onClick={() => handleDeleteComment(comment.id)}
+                                                                        onClick={() => handleDeleteComment(comment.id,'comment')}
                                                                     >
                                                                         Delete
                                                                     </button>
@@ -563,7 +603,7 @@ const PostDetailsPage = () => {
                                                 )}
 
                                                 {/* Nested Replies */}
-                                                {comment.replies.length > 0 && (
+                                                {comment?.replies?.length > 0 && (
                                                     <div className="mt-3 space-y-3 pl-3 border-l-2 border-gray-200">
                                                         {comment.replies.map((reply) => (
                                                             <div key={reply.id} className="pt-3">
@@ -605,7 +645,7 @@ const PostDetailsPage = () => {
                                                                                             <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-md z-10">
                                                                                                 <button
                                                                                                     className="block w-full text-left px-3 py-1 text-red-500 hover:bg-gray-100"
-                                                                                                    onClick={() => handleDeleteReply(reply.id)}
+                                                                                                    onClick={() => handleDeleteComment(reply?.id,'reply', reply?.parent_id)}
                                                                                                 >
                                                                                                     Delete
                                                                                                 </button>

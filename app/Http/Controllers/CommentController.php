@@ -38,7 +38,7 @@ class CommentController extends Controller
             'parent_id' => null,
         ]);
 
-        $comment->load('user');
+        $comment->load('user','replies');
 
         return response()->json([
             'message' => 'Commented successfully.',
@@ -69,6 +69,15 @@ class CommentController extends Controller
             'message' => 'Replied successfully.',
             'status'  => 'success',
             'data' => $reply
+        ], 200);
+    }
+
+    public function destroyComment(Comment $comment)
+    {
+        $comment->delete();
+
+        return response()->json([
+            'message' => 'Comment deleted successfully.'
         ], 200);
     }
 }

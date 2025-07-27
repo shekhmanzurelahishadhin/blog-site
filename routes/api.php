@@ -20,7 +20,7 @@ Route::get('/posts/related/{slug}', [HomeController::class, 'relatedPosts']);
 Route::post('/send-message', [HomeController::class, 'sendMessage']);
 Route::post('/subscribe', [HomeController::class,'subscribe']);
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
-Route::post('/comments/{comment}/reply', [CommentController::class, 'reply']);
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -36,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::post('/comments', [CommentController::class, 'store']);
+    Route::post('/comments/{comment}/reply', [CommentController::class, 'reply']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroyComment']);
 
 });
 
