@@ -36,35 +36,7 @@ const PostDetailsPage = () => {
     const{ subscribe, user } = useAuth();
 
     // Comment-related state
-    const [comments, setComments] = useState([
-        // {
-        //     id: 1,
-        //     author: { name: 'John Doe', initials: 'JD', avatar: null },
-        //     text: 'This article really helped me understand the topic better!',
-        //     date: '2023-06-15T10:30:00Z',
-        //     likes: 5,
-        //     liked: false,
-        //     replies: [
-        //         {
-        //             id: 2,
-        //             author: { name: 'Jane Smith', initials: 'JS', avatar: null },
-        //             text: 'I completely agree! The examples were particularly helpful.',
-        //             date: '2023-06-15T14:45:00Z',
-        //             likes: 2,
-        //             liked: false
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 3,
-        //     author: { name: 'Alex Johnson', initials: 'AJ', avatar: null },
-        //     text: 'Does anyone have additional resources on this subject?',
-        //     date: '2023-06-16T09:15:00Z',
-        //     likes: 3,
-        //     liked: true,
-        //     replies: []
-        // }
-    ]);
+    const [comments, setComments] = useState([]);
 
     const [newComment, setNewComment] = useState('');
     const [showCommentForm, setShowCommentForm] = useState(false);
@@ -240,44 +212,41 @@ const PostDetailsPage = () => {
     };
 
 
-    const handleLikeComment = (commentId) => {
-        setComments(comments.map(comment => {
-            if (comment.id === commentId) {
-                return {
-                    ...comment,
-                    likes: comment.liked ? comment.likes - 1 : comment.likes + 1,
-                    liked: !comment.liked
-                };
-            }
-            return comment;
-        }));
+    const handleLike = async (commentId, parentId = null) => {
+        try {
+            const { data } = await api.post(`/comments/${commentId}/like`);
+
+            setComments(prev =>
+                prev.map(comment => {
+                    // If it's a top-level comment
+                    if (!parentId && comment.id === commentId) {
+                        return {
+                            ...comment,
+                            likes: data.likes,
+                            liked: !comment.liked
+                        };
+                    }
+
+                    // If it's a reply
+                    if (parentId && comment.id === parentId) {
+                        return {
+                            ...comment,
+                            replies: comment.replies.map(reply =>
+                                reply.id === commentId
+                                    ? { ...reply, likes: data.likes, liked: !reply.liked }
+                                    : reply
+                            )
+                        };
+                    }
+
+                    return comment;
+                })
+            );
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const handleLikeReply = (commentId, replyId) => {
-        setComments(comments.map(comment => {
-            if (comment.id === commentId) {
-                return {
-                    ...comment,
-                    replies: comment.replies.map(reply => {
-                        if (reply.id === replyId) {
-                            return {
-                                ...reply,
-                                likes: reply.liked ? reply.likes - 1 : reply.likes + 1,
-                                liked: !reply.liked
-                            };
-                        }
-                        return reply;
-                    })
-                };
-            }
-            return comment;
-        }));
-    };
-
-    const handleLike = () => {
-        setIsLiked(!isLiked);
-        setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-    };
 
     const handleBookmark = () => {
         setIsBookmarked(!isBookmarked);
@@ -532,12 +501,13 @@ const PostDetailsPage = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <button
-                                                        onClick={() => handleLikeComment(comment.id)}
+                                                        onClick={() => handleLike(comment.id)}
                                                         className={`flex items-center gap-1 ${comment?.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                                                     >
                                                         <FontAwesomeIcon icon={faHeart} size="sm" />
                                                         <span className="text-sm">{comment?.likes}</span>
                                                     </button>
+
                                                     {/* Show icon only if the logged-in user owns the comment */}
                                                     {comment.user_id === user?.id && (
                                                         <div className="relative">
@@ -625,12 +595,13 @@ const PostDetailsPage = () => {
                                                                             </div>
                                                                             <div  className="flex items-center gap-2">
                                                                                 <button
-                                                                                    onClick={() => handleLikeReply(comment.id, reply.id)}
-                                                                                    className={`flex items-center gap-1 ${reply.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                                                                                    onClick={() => handleLike(reply.id, comment.id)}
+                                                                                    className={`flex items-center gap-1 ${reply?.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                                                                                 >
                                                                                     <FontAwesomeIcon icon={faHeart} size="xs" />
-                                                                                    <span className="text-xs">{reply.likes}</span>
+                                                                                    <span className="text-xs">{reply?.likes}</span>
                                                                                 </button>
+
                                                                                 {reply.user_id === user?.id && (
                                                                                     <div className="relative">
                                                                                         <button

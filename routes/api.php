@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/comments', [CommentController::class, 'store']);
     Route::post('/comments/{comment}/reply', [CommentController::class, 'reply']);
     Route::delete('/comments/{comment}', [CommentController::class, 'destroyComment']);
-
+    Route::post('/comments/{id}/like', [CommentController::class, 'toggleLike']);
 });
 
 

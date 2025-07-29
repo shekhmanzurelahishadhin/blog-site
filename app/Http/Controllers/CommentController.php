@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\CommentLike;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -13,13 +15,14 @@ class CommentController extends Controller
     {
         $comments = Comment::where('post_id', $postId)
             ->whereNull('parent_id')
-            ->with(['user', 'replies.user'])
+            ->with(['user', 'replies.user','likedByUser'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json([
             'message' => 'Comments list fetched.',
-            'data' => $comments
+            'data' => $comments,
+            'user'=>Auth::id()
         ], 200);
     }
 
@@ -80,4 +83,30 @@ class CommentController extends Controller
             'message' => 'Comment deleted successfully.'
         ], 200);
     }
+
+    public function toggleLike($id)
+    {
+        $comment = Comment::findOrFail($id);
+        $userId = auth()->id();
+
+        $existingLike = CommentLike::where('comment_id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existingLike) {
+            // Unlike
+            $existingLike->delete();
+            $comment->decrement('likes');
+            return response()->json(['message' => 'Unliked', 'likes' => $comment->likes]);
+        } else {
+            // Like
+            CommentLike::create([
+                'comment_id' => $id,
+                'user_id' => $userId
+            ]);
+            $comment->increment('likes');
+            return response()->json(['message' => 'Liked', 'likes' => $comment->likes]);
+        }
+    }
+
 }
