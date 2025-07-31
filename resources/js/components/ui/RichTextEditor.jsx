@@ -1,5 +1,7 @@
 import React, { useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { BubbleMenu } from '@tiptap/react/menus'
+
 import StarterKit from '@tiptap/starter-kit';
 import {TextStyle} from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
@@ -8,24 +10,60 @@ import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
-import { Table } from '@tiptap/extension-table';
+import {Table} from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import TableRow from '@tiptap/extension-table-row';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-// import { lowlight } from 'lowlight';
+import Superscript from '@tiptap/extension-superscript';
+import Subscript from '@tiptap/extension-subscript';
+import Strike from '@tiptap/extension-strike';
+import BulletList from '@tiptap/extension-bullet-list';
+import OrderedList from '@tiptap/extension-ordered-list';
+import ListItem from '@tiptap/extension-list-item';
+import Blockquote from '@tiptap/extension-blockquote';
+
+// import lowlight from 'lowlight';
+
+
 import css from 'highlight.js/lib/languages/css';
 import js from 'highlight.js/lib/languages/javascript';
 import html from 'highlight.js/lib/languages/xml';
-import { FaBold, FaItalic, FaUnderline, FaStrikethrough, FaCode, FaLink, FaUnlink, 
-         FaImage, FaTable, FaQuoteRight, FaListUl, FaListOl, FaAlignLeft, 
-         FaAlignCenter, FaAlignRight, FaAlignJustify, FaUndo, FaRedo, FaHeading, 
-         FaParagraph, FaSubscript, FaSuperscript, FaFileWord, FaFilePdf, FaFileCode, 
-         FaPrint, FaExpand, FaCompress, FaSmile, FaVideo, FaMusic, FaPaintRoller, 
-         FaEraser, FaMagic, FaLowVision } from 'react-icons/fa';
 
-// Register languages with lowlight
+import {
+  FaBold,
+  FaItalic,
+  FaUnderline,
+  FaStrikethrough,
+  FaCode,
+  FaLink,
+  FaImage,
+  FaTable,
+  FaQuoteRight,
+  FaListUl,
+  FaListOl,
+  FaAlignLeft,
+  FaAlignCenter,
+  FaAlignRight,
+  FaAlignJustify,
+  FaUndo,
+  FaRedo,
+  FaHeading,
+  FaParagraph,
+  FaSubscript,
+  FaSuperscript,
+  FaFileWord,
+  FaFilePdf,
+  FaFileCode,
+  FaPrint,
+  FaExpand,
+  FaEraser,
+  FaLowVision,
+  FaPaintRoller,
+} from 'react-icons/fa';
+
+// Register languages with lowlight for syntax highlighting
 // lowlight.registerLanguage('html', html);
 // lowlight.registerLanguage('css', css);
 // lowlight.registerLanguage('js', js);
@@ -34,7 +72,7 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        codeBlock: false,
+        codeBlock: false, // disable default codeBlock so we can use CodeBlockLowlight
         heading: {
           levels: [1, 2, 3, 4],
         },
@@ -43,6 +81,9 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
       Color,
       Highlight.configure({ multicolor: true }),
       Underline,
+      Strike,
+      Superscript,
+      Subscript,
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
@@ -66,8 +107,12 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
         placeholder: 'Type something or use / for commands...',
       }),
       // CodeBlockLowlight.configure({
-      //   // lowlight,
+      //   lowlight,
       // }),
+        BulletList,    // <-- add
+  OrderedList,   // <-- add
+  ListItem,      // <-- add
+  Blockquote,    // <-- add
     ],
     content,
     editable,
@@ -88,9 +133,7 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
     const previousUrl = editor.getAttributes('link').href;
     const url = window.prompt('URL', previousUrl);
 
-    if (url === null) {
-      return;
-    }
+    if (url === null) return;
 
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -110,7 +153,7 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
 
   return (
     <div className="border rounded-lg shadow-sm overflow-hidden bg-white">
-      {/* Main Toolbar */}
+      {/* Toolbar */}
       <div className="bg-gray-50 border-b p-2 flex flex-wrap gap-1">
         {/* Undo/Redo */}
         <div className="flex border-r pr-2 mr-2">
@@ -193,10 +236,18 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
             }
             className="p-1 text-sm rounded border border-gray-300 bg-white"
           >
-            <option value="paragraph"><FaParagraph className="inline mr-1" /> Paragraph</option>
-            <option value="1"><FaHeading className="inline mr-1" /> Heading 1</option>
-            <option value="2"><FaHeading className="inline mr-1" /> Heading 2</option>
-            <option value="3"><FaHeading className="inline mr-1" /> Heading 3</option>
+            <option value="paragraph">
+              <FaParagraph className="inline mr-1" /> Paragraph
+            </option>
+            <option value="1">
+              <FaHeading className="inline mr-1" /> Heading 1
+            </option>
+            <option value="2">
+              <FaHeading className="inline mr-1" /> Heading 2
+            </option>
+            <option value="3">
+              <FaHeading className="inline mr-1" /> Heading 3
+            </option>
           </select>
         </div>
 
@@ -334,7 +385,7 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
           </button>
         </div>
 
-        {/* Format Painter */}
+        {/* Format Painter & Clear */}
         <div className="flex border-r pr-2 mr-2">
           <button
             className="p-2 rounded hover:bg-gray-200"
@@ -351,75 +402,67 @@ const RichTextEditor = ({ content = '', onChange = () => {}, editable = true }) 
           </button>
         </div>
 
-        {/* Export/Print */}
+        {/* Export/Print (no handlers implemented, placeholders) */}
         <div className="flex border-r pr-2 mr-2">
-          <button
-            className="p-2 rounded hover:bg-gray-200"
-            title="Export to Word"
-          >
+          <button className="p-2 rounded hover:bg-gray-200" title="Export to Word">
             <FaFileWord />
           </button>
-          <button
-            className="p-2 rounded hover:bg-gray-200"
-            title="Export to PDF"
-          >
+          <button className="p-2 rounded hover:bg-gray-200" title="Export to PDF">
             <FaFilePdf />
           </button>
-          <button
-            className="p-2 rounded hover:bg-gray-200"
-            title="Print"
-          >
+          <button className="p-2 rounded hover:bg-gray-200" title="Print">
             <FaPrint />
           </button>
         </div>
 
-        {/* Fullscreen */}
+        {/* Fullscreen (no handler, placeholder) */}
         <div className="flex">
-          <button
-            className="p-2 rounded hover:bg-gray-200"
-            title="Fullscreen"
-          >
+          <button className="p-2 rounded hover:bg-gray-200" title="Fullscreen">
             <FaExpand />
           </button>
         </div>
       </div>
 
-      {/* Bubble Menu (appears when selecting text) */}
-      {/* {editor && (
+      {/* Bubble Menu */}
+      {editor && (
         <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
           <div className="flex bg-white shadow-lg rounded-lg p-1 border border-gray-200">
             <button
               onClick={() => editor.chain().focus().toggleBold().run()}
               className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('bold') ? 'bg-gray-200 text-blue-600' : ''}`}
+              title="Bold"
             >
               <FaBold />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleItalic().run()}
               className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('italic') ? 'bg-gray-200 text-blue-600' : ''}`}
+              title="Italic"
             >
               <FaItalic />
             </button>
             <button
               onClick={() => editor.chain().focus().toggleUnderline().run()}
               className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('underline') ? 'bg-gray-200 text-blue-600' : ''}`}
+              title="Underline"
             >
               <FaUnderline />
             </button>
             <button
               onClick={setLink}
               className={`p-2 rounded hover:bg-gray-200 ${editor.isActive('link') ? 'bg-gray-200 text-blue-600' : ''}`}
+              title="Link"
             >
               <FaLink />
             </button>
           </div>
         </BubbleMenu>
-      )} */}
+      )}
 
       {/* Editor Content */}
-      <EditorContent 
-        editor={editor} 
-        className="min-h-[300px] p-4 bg-white focus:outline-none prose max-w-none" 
+      <EditorContent
+        editor={editor}
+        className="min-h-[300px] p-4 bg-white focus:outline-none prose max-w-none"
       />
     </div>
   );
