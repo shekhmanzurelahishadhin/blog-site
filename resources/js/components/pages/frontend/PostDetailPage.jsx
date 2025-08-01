@@ -76,19 +76,22 @@ const PostDetailsPage = () => {
 
     // Fetch Comments after post is loaded
     useEffect(() => {
-        if (!post?.id) return; // wait until post is fetched
+        if (!post?.id) return; // Wait until post is fetched
 
         const fetchComments = async () => {
             try {
-                const res = await api.get(`/posts/${post.id}/comments`);
-                setComments(res.data.data); // Laravel API should return an array of comments
+                const res = await api.get(`/posts/${post.id}/comments`, {
+                    params: user ? { user_id: user.id } : {}
+                });
+                setComments(res.data.data);
             } catch (error) {
                 console.error('Failed to fetch comments', error);
             }
         };
 
         fetchComments();
-    }, [post?.id]);
+    }, [post?.id, user]);
+
 
     // Fetch categories
     useEffect(() => {
@@ -223,7 +226,7 @@ const PostDetailsPage = () => {
                         return {
                             ...comment,
                             likes: data.likes,
-                            liked: !comment.liked
+                            is_liked: !comment.is_liked
                         };
                     }
 
@@ -233,7 +236,7 @@ const PostDetailsPage = () => {
                             ...comment,
                             replies: comment.replies.map(reply =>
                                 reply.id === commentId
-                                    ? { ...reply, likes: data.likes, liked: !reply.liked }
+                                    ? { ...reply, likes: data.likes, is_liked: !reply.is_liked }
                                     : reply
                             )
                         };
@@ -502,7 +505,7 @@ const PostDetailsPage = () => {
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => handleLike(comment.id)}
-                                                        className={`flex items-center gap-1 ${comment?.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                                                        className={`flex items-center gap-1 ${comment?.is_liked == 1 ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                                                     >
                                                         <FontAwesomeIcon icon={faHeart} size="sm" />
                                                         <span className="text-sm">{comment?.likes}</span>
@@ -596,7 +599,7 @@ const PostDetailsPage = () => {
                                                                             <div  className="flex items-center gap-2">
                                                                                 <button
                                                                                     onClick={() => handleLike(reply.id, comment.id)}
-                                                                                    className={`flex items-center gap-1 ${reply?.liked ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                                                                                    className={`flex items-center gap-1 ${reply?.is_liked == 1 ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
                                                                                 >
                                                                                     <FontAwesomeIcon icon={faHeart} size="xs" />
                                                                                     <span className="text-xs">{reply?.likes}</span>

@@ -11,18 +11,36 @@ use Illuminate\Support\Facades\Auth;
 class CommentController extends Controller
 {
     // List comments + nested replies for a post
-    public function index($postId)
+    public function index(Request $request,$postId)
     {
+        $userId = $request->query('user_id');
+        $comments =  $userId = $request->query('user_id');
+
         $comments = Comment::where('post_id', $postId)
             ->whereNull('parent_id')
-            ->with(['user', 'replies.user','likedByUser'])
+            ->with([
+                'user',
+                'replies' => function ($q) use ($userId) {
+                    $q->with('user')
+                        ->when($userId, function ($query) use ($userId) {
+                            $query->withCount(['likedByUser as is_liked' => function ($q2) use ($userId) {
+                                $q2->where('user_id', $userId);
+                            }]);
+                        });
+                }
+            ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->withCount(['likedByUser as is_liked' => function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                }]);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json([
             'message' => 'Comments list fetched.',
             'data' => $comments,
-            'user'=>Auth::id()
+            'user'=>$userId
         ], 200);
     }
 

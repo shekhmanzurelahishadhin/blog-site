@@ -17,7 +17,7 @@ import PublicLayouts from './layouts/PublicLayouts';
 import SocialCallback from './pages/auth/SocialCallback';
 import ContactMessageList from "./pages/contact-message/ContactMessageList";
 import SubscriberList from "./pages/subsciber/SubscriberList";
-
+import ContactSection from "./frontend-component/ContactSection";
 
 
 export default function App() {
@@ -29,6 +29,7 @@ export default function App() {
                 <Route path='posts' element={<AllPostsPage />} />
                 <Route path='posts/:slug' element={<PostDetailPage />} />
                 <Route path='categories/:slug' element={<AllPostsPage />} />
+                <Route path='contact-us' element={<ContactSection/>} />
             </Route>
             <Route path='/auth' element={
                 <GuestRoute>

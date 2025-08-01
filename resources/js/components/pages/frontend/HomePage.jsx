@@ -6,7 +6,7 @@ import * as Icons from '@fortawesome/free-solid-svg-icons';
 import HeroSection from '../../frontend-component/HeroSection';
 import CategorySlider from '../../frontend-component/CategorySlider';
 import FeaturedPosts from '../../frontend-component/FeaturedPosts';
-import ContactSection from '../../frontend-component/ContactSection ';
+import ContactSection from '../../frontend-component/ContactSection';
 
 
 const HomePage = () => {
