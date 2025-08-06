@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\frontend\HomeController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -33,7 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('contact-messages', ContactMessageController::class);
     Route::get('subscriber-list', [ContactMessageController::class, 'subscriberList']);
     Route::delete('destroy-subscriber/{subscribe}', [ContactMessageController::class, 'subscriberDestroy']);
-
+    Route::get('user-list', [UserController::class, 'userList']);
+    Route::delete('destroy-user/{user}', [UserController::class, 'userDestroy']);
+    Route::post('make-admin/{user}', [UserController::class, 'makeAdmin']);
 
     Route::post('/comments', [CommentController::class, 'store']);
     Route::post('/comments/{comment}/reply', [CommentController::class, 'reply']);

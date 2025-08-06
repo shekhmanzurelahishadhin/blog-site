@@ -18,6 +18,7 @@ import SocialCallback from './pages/auth/SocialCallback';
 import ContactMessageList from "./pages/contact-message/ContactMessageList";
 import SubscriberList from "./pages/subsciber/SubscriberList";
 import ContactSection from "./frontend-component/ContactSection";
+import UsersList from './pages/users/UsersList';
 
 
 export default function App() {
@@ -50,7 +51,7 @@ export default function App() {
                 <Route path='posts' element={<PostList />} />
                 <Route path="posts/:slug" element={<PostDetails />} />
                 <Route path='message-list' element={<ContactMessageList />} />
-                <Route path='subscriber-list' element={<SubscriberList />} />
+                <Route path='users' element={<UsersList />} />
             </Route>
             <Route path="/auth/social-callback" element={<SocialCallback />} />
         </Routes>

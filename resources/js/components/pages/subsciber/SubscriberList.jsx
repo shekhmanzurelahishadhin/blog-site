@@ -13,7 +13,7 @@ export default function SubscriberList() {
     const [filteredSubscribers, setFilteredSubscribers] = useState([]);
 
     // Fetch contact subscribers
-    const fetchMessages = async () => {
+    const fetchSubscribers = async () => {
         try {
             setIsLoading(true);
             const res = await api.get('/subscriber-list');
@@ -28,7 +28,7 @@ export default function SubscriberList() {
     };
 
     useEffect(() => {
-        fetchMessages();
+        fetchSubscribers();
     }, []);
 
     useEffect(() => {
@@ -46,7 +46,7 @@ export default function SubscriberList() {
     const handleDelete = async (id) => {
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: 'Do you really want to delete this message?',
+            text: 'Do you really want to delete this subscriber?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -57,7 +57,7 @@ export default function SubscriberList() {
         if (result.isConfirmed) {
             try {
                 await api.delete(`/destroy-subscriber/${id}`);
-                toast.success('Message deleted successfully');
+                toast.success('Subscriber deleted successfully');
                 setSubscribers(prev => prev.filter(msg => msg.id !== id));
             } catch (error) {
                 toast.error(error.response?.data?.message || 'Failed to delete message');
