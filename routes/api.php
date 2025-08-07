@@ -21,4 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // frontend api
-Route::get('/category-list', [HomeController::class, 'index']);
+Route::get('/category-list', [HomeController::class, 'categoryList']);
+Route::get('/post-list', [HomeController::class, 'postList']);
+Route::get('/posts/{slug}', [HomeController::class, 'showPostDetails']);
