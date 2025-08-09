@@ -19,6 +19,7 @@ import ContactMessageList from "./pages/contact-message/ContactMessageList";
 import SubscriberList from "./pages/subsciber/SubscriberList";
 import ContactSection from "./frontend-component/ContactSection";
 import UsersList from './pages/users/UsersList';
+import AboutUs from "./pages/frontend/AboutUs";
 
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
                 <Route path='posts/:slug' element={<PostDetailPage />} />
                 <Route path='categories/:slug' element={<AllPostsPage />} />
                 <Route path='contact-us' element={<ContactSection/>} />
+                <Route path='about-us' element={<AboutUs/>} />
             </Route>
             <Route path='/auth' element={
                 <GuestRoute>
