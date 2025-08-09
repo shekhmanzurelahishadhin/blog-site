@@ -60,12 +60,12 @@ const HeroSection = () => {
                                     >
                                         Read Now
                                     </NavLink>
-                                    <a
-                                        href="/popular"
+                                    <NavLink
+                                        to="/posts?sort=popular"
                                         className="px-6 py-3 border border-indigo-600 text-indigo-600 rounded-md"
                                     >
                                         Popular Posts
-                                    </a>
+                                    </NavLink>
                                 </div>
                             </>
                         )}

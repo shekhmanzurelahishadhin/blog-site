@@ -38,8 +38,16 @@ class HomeController extends Controller
         $sort = $request->query('sort', 'desc'); // default desc if not sent
 
         $query = Post::with('categories:id,name,color')
-            ->where('active', 1)
-            ->orderBy('created_at', $sort);
+            ->where('active', 1);
+
+        if ($sort === 'popular') {
+            $query->orderBy('views', 'desc'); // Most viewed first
+        } elseif (in_array($sort, ['asc', 'desc'])) {
+            $query->orderBy('created_at', $sort); // By date
+        } else {
+            // fallback to newest first
+            $query->orderBy('created_at', 'desc');
+        }
 
         if ($limit) {
             $query->take($limit);

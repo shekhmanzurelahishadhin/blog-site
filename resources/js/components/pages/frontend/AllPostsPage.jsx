@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faFilter, faClock, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
@@ -11,6 +11,7 @@ const AllPostsPage = () => {
   // State management
   const { search } = useLocation();
   const params = new URLSearchParams(search);
+  const [searchParams] = useSearchParams();
   const initialCategory = params.get("category") || "All";
   const [categories, setCategories] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -40,25 +41,27 @@ const AllPostsPage = () => {
     fetchCategories();
   }, []);
 
-  // Fetch Posts from Laravel API
-  const fetchPosts = async () => {
-    setPostsLoading(true);
-    try {
-      const res = await api.get('/post-list');
-      setPosts(res.data.data);
-      setFilteredPosts(res.data.data);
-    } catch (error) {
-      toast.error('Failed to fetch posts');
-      localStorage.removeItem('auth_token');
-    } finally {
-      setPostsLoading(false);
-    }
-  };
+    // Fetch Posts from Laravel API
+    const fetchPosts = async (sortBy = null) => {
+        setPostsLoading(true);
+        try {
+            const res = await api.get('/post-list', {
+                params: sortBy ? { sort: sortBy } : {}
+            });
+            setPosts(res.data.data);
+            setFilteredPosts(res.data.data);
+        } catch (error) {
+            toast.error('Failed to fetch posts');
+            // localStorage.removeItem('auth_token');
+        } finally {
+            setPostsLoading(false);
+        }
+    };
 
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+    const sort = searchParams.get('sort'); // 'popular' if clicked link
+    useEffect(() => {
+        fetchPosts(sort);
+    }, [sort]);
   // Get unique categories
   const categoryNames = ['All', ...new Set(categories.map(category => category?.name))];
 

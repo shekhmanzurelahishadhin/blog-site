@@ -64,7 +64,7 @@ const Header = () => {
                             All Posts
                         </NavLink>
                         <NavLink to="/about-us" className={navLinkClasses}>
-                            About
+                            About Us
                         </NavLink>
                         <NavLink to="/contact-us" className={navLinkClasses}>
                             Contact Us

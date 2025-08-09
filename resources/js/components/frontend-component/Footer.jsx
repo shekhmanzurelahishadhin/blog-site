@@ -4,18 +4,19 @@ import {
   faEnvelope,
   faPhone,
   faMapMarkerAlt,
-  faClock
+  faClock,
+    faGlobe
 } from '@fortawesome/free-solid-svg-icons';
 import {
-  faFacebook,
-  faTwitter,
-  faInstagram,
-  faLinkedin,
-  faYoutube
+    faFacebook,
+    faTwitter,
+    faInstagram,
+    faLinkedin,
+    faYoutube, faGithub
 } from '@fortawesome/free-brands-svg-icons';
 import api from "../../api/axios";
 import {toast} from "react-toastify";
-import {Link} from "react-router-dom";
+import {Link, NavLink} from "react-router-dom";
 import useAuth from "../../auth/useAuth";
 
 const Footer = () => {
@@ -73,21 +74,24 @@ const Footer = () => {
               Thoughtful content for curious minds. Explore, learn, and grow with our community of lifelong learners.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">
-                <FontAwesomeIcon icon={faFacebook} />
+              <a target="_blank"
+                  href="https://github.com/shekhmanzurelahishadhin" className="text-gray-400 hover:text-white text-xl transition-colors">
+                <FontAwesomeIcon icon={faGithub} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">
-                <FontAwesomeIcon icon={faTwitter} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">
-                <FontAwesomeIcon icon={faInstagram} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">
+              <a target="_blank"
+                 href="https://www.linkedin.com/in/shekh-monzur-elahi/" className="text-gray-400 hover:text-white text-xl transition-colors">
                 <FontAwesomeIcon icon={faLinkedin} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">
-                <FontAwesomeIcon icon={faYoutube} />
+              <a target="_blank"
+                 href="https://shekh-manzur-elahi.onrender.com/" className="text-gray-400 hover:text-white text-xl transition-colors">
+                <FontAwesomeIcon icon={faGlobe} />
               </a>
+              {/*<a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">*/}
+              {/*  <FontAwesomeIcon icon={faLinkedin} />*/}
+              {/*</a>*/}
+              {/*<a href="#" className="text-gray-400 hover:text-white text-xl transition-colors">*/}
+              {/*  <FontAwesomeIcon icon={faYoutube} />*/}
+              {/*</a>*/}
             </div>
           </div>
 
@@ -97,7 +101,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
               <li><Link to="/posts" className="hover:text-white transition-colors">Posts</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Popular Posts</a></li>
+              <li><Link to="/posts?sort=popular" className="hover:text-white transition-colors">Popular Posts</Link></li>
               <li><Link to="/about-us" className="hover:text-white transition-colors">About Us</Link></li>
               <li><Link to="/contact-us" className="hover:text-white transition-colors">Contact</Link></li>
             </ul>
