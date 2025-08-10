@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendPostEmail;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Subscribe;
+use App\Mail\NewPostNotification;
+use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
@@ -43,6 +47,12 @@ class PostController extends Controller
         $post = Post::create($data);
         $post->categories()->sync($data['category_ids']);
 
+
+        $emails = Subscribe::pluck('email'); // returns a collection
+
+        foreach ($emails as $email) {
+            SendPostEmail::dispatch($email, $post->id);
+        }
         return response()->json([
             'message' => 'Post created successfully.',
             'data' => $post->load('categories', 'user')
